@@ -18,7 +18,7 @@ $domain = $backup->getDomain();
 $tld = explode(".", $domain);
 $tld = $tld[0];
 
-//$ip = $backup->getIP(); // not used.
+$ip = $backup->getIP();
 $username = $backup->getUsername();
 
 /* BEGIN PRIMARY DOMAIN */
@@ -83,7 +83,7 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
 
     if ($popresult == true) { 
 echo "cat << EOF > /root/ImapCopy.cfg
-SourceServer $2
+SourceServer " . $ip . "
 SourcePort 143
 DestServer localhost
 DestPort 143
