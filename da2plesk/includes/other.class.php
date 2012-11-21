@@ -68,12 +68,12 @@ class Other {
 
     public function sendMail($domain, $username, $password, $email) {
         $body = MAIL_BODY; // get template to string
-        $body = str_replace("#DOMAIN", $domain, $body);
+        $body = str_replace("#DOMAIN#", $domain, $body);
         $body = str_replace("#USERNAME#", $username, $body);
         $body = str_replace("#PASSWORD#", $password, $body);
         $body = str_replace("#MAIL_FROM_NAME#", MAIL_FROM_NAME, $body);
 
-        $headers = "From: " . MAIL_FROM_ADDR . "\r\n" .
+        $headers = "From: " . MAIL_FROM_NAME . " <". MAIL_FROM_ADDR . ">\r\n" .
                 'X-Mailer: PHP/' . phpversion();
 
         mail($email, MAIL_SUBJECT, $body, $headers, "-f" . MAIL_FROM_ADDR);
