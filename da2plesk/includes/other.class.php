@@ -7,11 +7,16 @@ class Other {
     const MSG_COLOR = "light_green";
     const BG_COLOR = "black";
     const WARN_COLOR = "light_red";
-
-    private $colors = null;
     
-    public function __construct() {
+    private $colors = null;
+    private $mail_from_addr;
+    private $mail_from_name;
+    
+    public function __construct($mail_from_addr, $mail_from_name) {
         $this->colors = new Colors();
+        
+        $this->mail_from_addr = $mail_from_addr;
+        $this->mail_from_name = $mail_from_name;
     }
     
     public function Log($tag, $message, $warn = false) {
@@ -31,7 +36,7 @@ class Other {
         }
     }
 
-    function generatePassword($length=9, $strength=0) {
+    public function generatePassword($length=9, $strength=0) {
         $vowels = 'aeuy';
         $consonants = 'bdghjmnpqrstvz';
         if ($strength & 1) {
@@ -61,6 +66,18 @@ class Other {
         return $password;
     }
 
+    public function sendMail($domain, $username, $password, $email) {
+        $body = MAIL_BODY; // get template to string
+        $body = str_replace("#DOMAIN", $domain, $body);
+        $body = str_replace("#USERNAME#", $username, $body);
+        $body = str_replace("#PASSWORD#", $password, $body);
+        $body = str_replace("#MAIL_FROM_NAME#", MAIL_FROM_NAME, $body);
+        
+        $headers =  "From: " . MAIL_FROM_ADDR . "\r\n" .
+                    'X-Mailer: PHP/' . phpversion();
+        
+        mail($email, MAIL_SUBJECT, $body, $headers, "-f" . MAIL_FROM_ADDR);
+    }
 }
 
 ?>

@@ -102,6 +102,12 @@ class Backup {
         return $result;
     }
 
+    public function getEmail($log = TRUE) {
+        $result = $this->getNVP($this->backup_path . "/backup/user.conf", "email");
+        if ($log) { $this->other->Log("Backup->getEmail", $result); };
+        return $result;
+    }
+
     public function getIP() {
         $result = $this->getNVP($this->backup_path . "/backup/user.conf", "ip");
         $this->other->Log("Backup->getIP", $result);

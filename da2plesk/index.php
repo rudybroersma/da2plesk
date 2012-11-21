@@ -8,9 +8,9 @@ include("includes/config.inc.php");
 // Do not log notices and warnings (imap_open logs notices and warnings on wrong login)
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
-$backup = new Backup(BACKUP_PATH);
-$other = new Other();
-$mail = new Email(EMAIL_PWS);
+$backup = new Backup(BACKUP_PATH); // backup_path is a constant from the config file containing untarred DA backup
+$other = new Other(MAIL_FROM_ADDR, MAIL_FROM_NAME);
+$mail = new Email(EMAIL_PWS); // email_pws is a constant from the config file, containing email passwords
 
 $password = $other->generatePassword();
 
@@ -18,7 +18,7 @@ $domain = $backup->getDomain();
 $tld = explode(".", $domain);
 $tld = $tld[0];
 
-$ip = $backup->getIP();
+//$ip = $backup->getIP(); // not used.
 $username = $backup->getUsername();
 
 /* BEGIN PRIMARY DOMAIN */
@@ -81,7 +81,17 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         $popresult = true;
     }
 
-    if ($popresult == true) { echo "/usr/bin/copymail $extradomain $ip\n"; };
+    if ($popresult == true) { 
+echo "cat << EOF > /root/ImapCopy.cfg
+SourceServer $2
+SourcePort 143
+DestServer localhost
+DestPort 143
+DenyFlags \"\Recent\"
+#       SourceUser    SourcePassword   DestinationUser DestinationPassword
+EOF";
+echo '/opt/psa/admin/bin/mail_auth_view  | grep $1 | sed "s/ //g" | sed "s/||/\" \"/g" | sed "s/|/\"/g" | awk \'{ print "Copy " $1 $2 " " $1 $2 }\' >> /root/ImapCopy.cfg\n';
+    };
     
     foreach ($backup->getForward($extradomain) as $forward) {
         echo "/opt/psa/bin/mail -c " . $forward['account'] . "@$extradomain -mailbox false -forwarding true -forwarding-addresses add:" . $forward['to'] . "\n";
@@ -100,6 +110,12 @@ foreach ($backup->getDatabaseList() as $db) {
         echo "/usr/bin/mysql -uadmin -p`cat /etc/psa/.psa.shadow` mysql -e \"FLUSH PRIVILEGES\"\n";
     };
 }
+
+// Send mail to customer
+//$other->sendMail($domain, $username, $password, $backup->getEmail());
+$other->sendMail($domain, $username, $password, "tozz@kijkt.tv");
+
+// DO NOT FORGET TO DO SOME DNS MAGIC!
 
 
 ?>
