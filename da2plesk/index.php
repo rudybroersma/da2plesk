@@ -1,6 +1,7 @@
 <?php
 //test git commit
 // test commit 2
+// en test 3
 include("includes/color.class.php");
 include("includes/other.class.php");
 include("includes/email.class.php");
