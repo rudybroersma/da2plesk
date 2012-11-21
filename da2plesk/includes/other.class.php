@@ -11,15 +11,15 @@ class Other {
     private $colors = null;
     private $mail_from_addr;
     private $mail_from_name;
-    private $send_email;
+    private $send_mail = false;
 
-    public function __construct($mail_from_addr, $mail_from_name, $send_email) {
+    public function __construct($mail_from_addr, $mail_from_name, $send_mail) {
         $this->colors = new Colors();
 
         $this->mail_from_addr = $mail_from_addr;
         $this->mail_from_name = $mail_from_name;
         
-        $this->send_email = $send_email;
+        $this->send_email = $send_mail;
         
     }
 
@@ -80,7 +80,7 @@ class Other {
         $headers = "From: " . MAIL_FROM_NAME . " <". MAIL_FROM_ADDR . ">\r\n" .
                 'X-Mailer: PHP/' . phpversion();
 
-        if ($this->send_email == true) {
+        if ($this->send_mail == true) {
           mail($email, MAIL_SUBJECT, $body, $headers, "-f" . MAIL_FROM_ADDR);
           $this->log("Other->sendMail()", "New credentails have been mailed to " . $email);
         } else {

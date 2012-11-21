@@ -11,7 +11,7 @@ define("EMAIL_PWS", "filename containing email passwords [email][space][password
 define("MAIL_FROM_ADDR", "Your e-mail address");
 define("MAIL_FROM_NAME", "Your name");
 
-define("SEND_EMAIL", false); // Do not send any email, use this for testing.
+define("SEND_MAIL", false); // Do not send any email, use this for testing.
 
 /* Valid fields for mail_body:
  * #USERNAME#
