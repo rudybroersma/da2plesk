@@ -1,4 +1,5 @@
 <?php
+//test git commit
 include("includes/color.class.php");
 include("includes/other.class.php");
 include("includes/email.class.php");
