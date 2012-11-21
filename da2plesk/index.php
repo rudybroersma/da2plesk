@@ -1,6 +1,4 @@
 <?php
-// 14:01
-$test = "14:01";
 include("includes/color.class.php");
 include("includes/other.class.php");
 include("includes/email.class.php");
@@ -13,8 +11,6 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 $backup = new Backup(BACKUP_PATH);
 $other = new Other();
 $mail = new Email(EMAIL_PWS);
-
-//$backup->getAdditionalDomains();
 
 $password = $other->generatePassword();
 
@@ -106,11 +102,4 @@ foreach ($backup->getDatabaseList() as $db) {
 }
 
 
-
-
-// plesk commandos
-// sed draaien
-// kijken of we sql pw's kunnen halen uit PHP
-// joomla ftp_enable
-// copymail draaien
 ?>
