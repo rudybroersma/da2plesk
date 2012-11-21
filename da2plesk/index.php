@@ -9,7 +9,7 @@ include("includes/config.inc.php");
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
 $backup = new Backup(BACKUP_PATH); // backup_path is a constant from the config file containing untarred DA backup
-$other = new Other(MAIL_FROM_ADDR, MAIL_FROM_NAME);
+$other = new Other(MAIL_FROM_ADDR, MAIL_FROM_NAME, SEND_EMAIL);
 $mail = new Email(EMAIL_PWS); // email_pws is a constant from the config file, containing email passwords
 
 $password = $other->generatePassword();
