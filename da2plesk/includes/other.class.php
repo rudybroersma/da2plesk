@@ -77,6 +77,8 @@ class Other {
                 'X-Mailer: PHP/' . phpversion();
 
         mail($email, MAIL_SUBJECT, $body, $headers, "-f" . MAIL_FROM_ADDR);
+        
+        $this->log("Other->sendMail()", "New credentails have been mailed to " . $email);
     }
 
 }
