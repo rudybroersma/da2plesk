@@ -1,26 +1,26 @@
 <?php
 
 class Other {
+
     const SPACE_LENGTH = 40;
-    
     const TAG_COLOR = "yellow";
     const MSG_COLOR = "light_green";
     const BG_COLOR = "black";
     const WARN_COLOR = "light_red";
-    
+
     private $colors = null;
     private $mail_from_addr;
     private $mail_from_name;
-    
+
     public function __construct($mail_from_addr, $mail_from_name) {
         $this->colors = new Colors();
-        
+
         $this->mail_from_addr = $mail_from_addr;
         $this->mail_from_name = $mail_from_name;
     }
-    
+
     public function Log($tag, $message, $warn = false) {
-        
+
         $tag = "# " . $tag . ":";
         $length = 3 + strlen($tag) + 1;
 
@@ -29,14 +29,14 @@ class Other {
         }
 
         echo $this->colors->getColoredString($tag, self::TAG_COLOR, self::BG_COLOR);
-        if ($warn == false) { 
-          echo $this->colors->getColoredString($message . "\n", self::MSG_COLOR, self::BG_COLOR);
+        if ($warn == false) {
+            echo $this->colors->getColoredString($message . "\n", self::MSG_COLOR, self::BG_COLOR);
         } else {
-          echo $this->colors->getColoredString($message . "\n", self::WARN_COLOR, self::BG_COLOR);
+            echo $this->colors->getColoredString($message . "\n", self::WARN_COLOR, self::BG_COLOR);
         }
     }
 
-    public function generatePassword($length=9, $strength=0) {
+    public function generatePassword($length = 9, $strength = 0) {
         $vowels = 'aeuy';
         $consonants = 'bdghjmnpqrstvz';
         if ($strength & 1) {
@@ -72,12 +72,13 @@ class Other {
         $body = str_replace("#USERNAME#", $username, $body);
         $body = str_replace("#PASSWORD#", $password, $body);
         $body = str_replace("#MAIL_FROM_NAME#", MAIL_FROM_NAME, $body);
-        
-        $headers =  "From: " . MAIL_FROM_ADDR . "\r\n" .
-                    'X-Mailer: PHP/' . phpversion();
-        
+
+        $headers = "From: " . MAIL_FROM_ADDR . "\r\n" .
+                'X-Mailer: PHP/' . phpversion();
+
         mail($email, MAIL_SUBJECT, $body, $headers, "-f" . MAIL_FROM_ADDR);
     }
+
 }
 
 ?>
