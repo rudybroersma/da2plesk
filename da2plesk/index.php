@@ -21,6 +21,8 @@ $tld = $tld[0];
 $ip = $backup->getIP();
 $username = $backup->getUsername();
 
+$ictmp = tempnam("/tmp", "imapcopy");
+
 /* BEGIN PRIMARY DOMAIN */
 echo "/opt/psa/bin/customer -c $username -name $username -passwd $password\n";
 echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"" . SERVICE_PLAN . "\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd $password\n";
@@ -69,6 +71,14 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         echo "rm $tmpfname\n";
     }
 
+    // Create imapcopy config file header
+    $handle = fopen("/root/ImapCopy.cfg", "w");
+    fwrite($handle, "SourceServer " . $ip . "\n");
+    fwrite($handle, "SourcePort 143\n");
+    fwrite($handle, "DestServer localhost\n");
+    fwrite($handle, "DestPort 143\n");
+    fwrite($handle, "DenyFlags \"\Recent\"\n");
+
     $popresult = false;
     foreach ($backup->getPOP($extradomain) as $pop) {
         $mailpw = $mail->getPassword($pop . "@" . $extradomain);
@@ -77,20 +87,15 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         };
         echo "/opt/psa/bin/mail -c $pop@$extradomain -mailbox true -passwd $mailpw -passwd_type plain\n";
         echo "/opt/psa/bin/spamassassin -u $pop@$extradomain -status true -hits 5 -action del\n";
-
+        echo "Copy \"$pop@$extradomain\" \"$mailpw\" \"$pop@$extradomain\" \"$mailpw\" >> $ictmp";
+        fwrite($handle, "Copy \"" . $pop . "@" . $domain . "\" \"" . $pop . "@" . $domain . "\" \"\n");
         $popresult = true;
     }
 
+    fclose($handle);
+
     if ($popresult == true) { 
-echo "cat << EOF > /root/ImapCopy.cfg
-SourceServer " . $ip . "
-SourcePort 143
-DestServer localhost
-DestPort 143
-DenyFlags \"\Recent\"
-#       SourceUser    SourcePassword   DestinationUser DestinationPassword
-EOF";
-echo '/opt/psa/admin/bin/mail_auth_view  | grep $1 | sed "s/ //g" | sed "s/||/\" \"/g" | sed "s/|/\"/g" | awk \'{ print "Copy " $1 $2 " " $1 $2 }\' >> /root/ImapCopy.cfg\n';
+        echo "cd /root; imapcopy\n";
     };
     
     foreach ($backup->getForward($extradomain) as $forward) {
