@@ -10,6 +10,11 @@ class Email {
     public function __construct($filename) {
         $this->other = new Other();
         $this->filename = $filename;
+        
+        if (!file_exists($this->filename)) {
+            $this->other->Log("Email->__construct", "E-mail database file does not exists. Exiting...");
+            exit;
+        }
     }
     
     public function getPassword($email) {
