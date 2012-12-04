@@ -85,10 +85,10 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         if ($mailpw == false) {
             $mailpw = $password;
         };
-        echo "/opt/psa/bin/mail -c $pop@$extradomain -mailbox true -passwd $mailpw -passwd_type plain\n";
+        echo "/opt/psa/bin/mail -c $pop@$extradomain -mailbox true -passwd '$mailpw' -passwd_type plain\n";
         echo "/opt/psa/bin/spamassassin -u $pop@$extradomain -status true -hits 5 -action del\n";
-        echo "Copy \"$pop@$extradomain\" \"$mailpw\" \"$pop@$extradomain\" \"$mailpw\" >> $ictmp";
-        fwrite($handle, "Copy \"" . $pop . "@" . $domain . "\" \"" . $pop . "@" . $domain . "\" \"\n");
+        //echo "Copy \"$pop@$extradomain\" \"$mailpw\" \"$pop@$extradomain\" \"$mailpw\" >> $ictmp";
+        fwrite($handle, "Copy \"" . $pop . "@" . $domain . "\" \"" . $mailpw . "\" \"" . $pop . "@" . $domain . "\" \"" . $mailpw . "\"\n");
         $popresult = true;
     }
 
