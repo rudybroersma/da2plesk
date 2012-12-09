@@ -107,6 +107,10 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
 foreach ($backup->getDatabaseList() as $db) {
     echo "/opt/psa/bin/database -c $db -domain $domain -type mysql\n";
     echo "/bin/sed -i \"s@/home/" . $username . "/domains/" . $domain . "/public_html@/var/www/vhosts/" . $domain . "/httpdocs@g\" " . $backup->getPath() . "/backup/" . $db . ".sql\n";
+
+    foreach($backup->getAdditionalDomains(TRUE) as $extradomain) {
+        echo "/bin/sed -i \"s@/home/" . $username . "/domains/" . $extradomain . "/public_html@/var/www/vhosts/" . $domain . "/domains/" . $extradomain . "@g\" " . $backup->getPath() . "/backup/" . $db . ".sql\n";
+    }
     echo "/usr/bin/mysql -uadmin -p`cat /etc/psa/.psa.shadow` $db < " . $backup->getPath() . "/backup/" . $db . ".sql\n";
 
     foreach ($backup->getDatabaseLogin($db) as $user) {
