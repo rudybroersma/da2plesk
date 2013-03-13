@@ -14,6 +14,8 @@ $mail = new Email(EMAIL_PWS); // email_pws is a constant from the config file, c
 
 $password = $other->generatePassword();
 
+$mailaccounts = array();
+
 $domain = $backup->getDomain();
 $tld = explode(".", $domain);
 $tld = $tld[0];
@@ -81,6 +83,8 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
 
     $popresult = false;
     foreach ($backup->getPOP($extradomain) as $pop) {
+        array_push($mailaccounts, $pop . "@" . $extradomain);
+        
         $mailpw = $mail->getPassword($pop . "@" . $extradomain);
         if ($mailpw == false) {
             $mailpw = $password;
@@ -99,8 +103,15 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
     };
     
     foreach ($backup->getForward($extradomain) as $forward) {
-        echo "/opt/psa/bin/mail -c " . $forward['account'] . "@$extradomain -mailbox false -forwarding true -forwarding-addresses add:" . $forward['to'] . "\n";
-        echo "/opt/psa/bin/spamassassin -u " . $forward['account'] . "@$extradomain -status true -hits 5 -action del\n";
+        if (!in_array($forward['accounts'] . "@" . $extradomain, $mailaccounts)) {
+            // Mailaccount is not in array, so we create a new one.
+          echo "/opt/psa/bin/mail -c " . $forward['account'] . "@$extradomain -mailbox false -forwarding true -forwarding-addresses add:" . $forward['to'] . "\n";
+          echo "/opt/psa/bin/spamassassin -u " . $forward['account'] . "@$extradomain -status true -hits 5 -action del\n";
+        } else {
+            // We add the forward to the already created account.
+          $forward['to'] = preg_replace('/\s+/', '', $forward['to']); // remove all spaces
+          echo "/opt/psa/bin/mail -u " . $forward['account'] . "@$extradomain -forwarding true -forwarding-addresses add:" . $forward['to'] . "\n";
+        }
     }
 }
 
