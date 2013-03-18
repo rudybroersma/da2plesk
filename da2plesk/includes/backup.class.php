@@ -31,6 +31,21 @@ class Backup {
         return $rows;
     }
 
+    public function getCatchall($domain) {
+        if ($domain == "") { echo "ERROR: domain not set\n"; exit; };
+        
+        $forwards = array();
+        foreach($this->readFile($this->backup_path . "/backup/" . $domain . "/email/email.conf") as $row) {
+            if (substr($row, 0, 9) == "catchall=") {
+                $email = substr($row, 10, strlen($row));
+                $this->other->Log("Backup->getCatchall", $domain . " catchall to " . $email, false);
+                return $email;
+            }
+        }
+        
+        $this->other->Log("Backup->getCatchall", $domain . " has no catchall address", true);
+    }
+
     public function getForward($domain) {
         if ($domain == "") { echo "ERROR: domain not set\n"; exit; };
         
