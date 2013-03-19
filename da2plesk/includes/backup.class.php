@@ -10,8 +10,8 @@ class Backup {
     public function __construct($path, $names, $users) {
          $this->other = new Other();
          $this->backup_path = $path;
-         $this->ignore_db_names = $names;
-         $this->ignore_db_users = $users;
+         $this->ignore_db_names = unserialize($names);
+         $this->ignore_db_users = unserialize($users);
     }
     
     public function getPath() {
