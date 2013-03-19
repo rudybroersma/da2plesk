@@ -14,8 +14,8 @@ define("MAIL_FROM_NAME", "Your name");
 define("SEND_MAIL", false); // Do not send any email, use this for testing.
 
 /* Constants cannot be arrays, so we serialize them */
-define("IGNORE_DB_NAMES", serialize(array("db_collation"))); // Databases to ignore.
-define("IGNORE_DB_USERS", serialize(array("admin, root, da_admin"))); // Database usernames to ignore.
+define("IGNORE_DB_NAMES", serialize(array("db_collation", "mysql", "psa", "da", "horde", "squirrelmail"))); // Databases to ignore.
+define("IGNORE_DB_USERS", serialize(array("admin", "root", "da_admin", "db_collation"))); // Database usernames to ignore.
 
 /* Valid fields for mail_body:
  * #USERNAME#
