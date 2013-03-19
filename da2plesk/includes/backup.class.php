@@ -41,9 +41,9 @@ class Backup {
                 $this->other->Log("Backup->getCatchall", $domain . " catchall to " . $email, false);
                 return $email;
             }
-        }po
+        }
         
-        $this->other->Log("Backup->getCatchall", $domain . " has no catchall address", true);
+        $this->other->Log("Backup->getCatchall", $domain . " has no catchall address" , true);
     }
 
     public function getForward($domain) {
