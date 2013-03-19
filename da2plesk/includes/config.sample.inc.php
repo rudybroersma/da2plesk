@@ -13,6 +13,9 @@ define("MAIL_FROM_NAME", "Your name");
 
 define("SEND_MAIL", false); // Do not send any email, use this for testing.
 
+define("IGNORE_DB_NAMES", array("db_collation")); // Databases to ignore.
+define("IGNORE_DB_USERS", array("admin, root, da_admin")); // Database usernames to ignore.
+
 /* Valid fields for mail_body:
  * #USERNAME#
  * #PASSWORD#

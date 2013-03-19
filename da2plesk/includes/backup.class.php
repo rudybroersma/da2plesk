@@ -4,10 +4,14 @@ class Backup {
     
     private $other;
     private $backup_path;
+    private $ignore_db_names;
+    private $ignore_db_users;
     
-    public function __construct($path) {
+    public function __construct($path, $names, $users) {
          $this->other = new Other();
          $this->backup_path = $path;
+         $this->ignore_db_names = $names;
+         $this->ignore_db_users = $users;
     }
     
     public function getPath() {
@@ -196,7 +200,8 @@ class Backup {
         };
         
         if (count($databases > 0)) {
-            return $databases;
+            return array_diff($databases, $this->ignore_db_names);
+            //return $databases;
         } else {
             $this->other->Log("Backup->getDatabaseList", "Client does not have any databases", true);
             return false;
@@ -219,7 +224,8 @@ class Backup {
         }
 
         if (count($logins) > 0) { 
-            return $logins;
+            return array_diff($logins, $this->ignore_db_users);
+            //return $logins;
         } else {
             $this->other->Log("Backup->getDatabaseLogin", "WARNING: " . $database . " has no users", true);
             return false;
