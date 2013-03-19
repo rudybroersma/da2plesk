@@ -36,12 +36,12 @@ class Backup {
         
         $forwards = array();
         foreach($this->readFile($this->backup_path . "/backup/" . $domain . "/email/email.conf") as $row) {
-            if (substr($row, 0, 9) == "catchall=") {
+            if (substr($row, 0, 9) == "catchall=" && strstr($row, "@")) {
                 $email = substr($row, 10, strlen($row));
                 $this->other->Log("Backup->getCatchall", $domain . " catchall to " . $email, false);
                 return $email;
             }
-        }
+        }po
         
         $this->other->Log("Backup->getCatchall", $domain . " has no catchall address", true);
     }
