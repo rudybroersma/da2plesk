@@ -218,14 +218,18 @@ class Backup {
                     $sql_user = $temp[0];
                     $sql_pass = str_replace("passwd=", "", $line_array[9]);
                         
-                    $this->other->Log("Backup->getDatabaseLogin", $sql_user . "|" . $sql_pass);
-                    $logins[] = array("user" => $sql_user, "pass" => $sql_pass);
+                    if (!in_array($sql_user, $this->ignore_db_users)) {
+                      $this->other->Log("Backup->getDatabaseLogin", $sql_user . "|" . $sql_pass);
+                      $logins[] = array("user" => $sql_user, "pass" => $sql_pass);
+                    } else {
+                      $this->other->Log("Backup->getDatabaseLogin", $sql_user . " is in banlist. Ignored!", true);
+                    }
                 } 
         }
 
         if (count($logins) > 0) { 
-            return array_diff($logins, $this->ignore_db_users);
-            //return $logins;
+            //return array_diff($logins, $this->ignore_db_users); // This wont work, because this is a 2dimensional array
+            return $logins;
         } else {
             $this->other->Log("Backup->getDatabaseLogin", "WARNING: " . $database . " has no users", true);
             return false;
