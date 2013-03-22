@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
 /*
 ** DirectAdmin to Plesk Migration script
 **
@@ -45,7 +47,7 @@ foreach ($backup->getSubdomains($domain) as $sub) {
 /* END PRIMARY DOMAIN */
 
 /* START ADDITIONAL DOMAINS */
-foreach ($backup->getAdditionalDomains() as $extradomain) {
+foreach ($backup->getAdditionalDomains(TRUE) as $extradomain) {
     echo "/opt/psa/bin/site -c $extradomain -hosting true -hst_type phys -webspace-name $domain -www-root domains/$extradomain\n";
     
     echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $extradomain . "/ -type f -print | xargs -I {} sed -i \"s@/home/" . $username . "/domains/" . $extradomain . "/public_html@/var/www/vhosts/" . $domain . "/domains/" . $extradomain . "@g\" {}\n";
@@ -61,6 +63,20 @@ foreach ($backup->getAdditionalDomains() as $extradomain) {
 /* END ADDITIONAL DOMAINS */
 
 foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
+
+    foreach($backup->getProtectedDirectories($extradomain) as $dir) {
+	echo "/opt/psa/bin/protdir -c " . $dir["path"] . " -domain " . $extradomain . " -title \"" . $dir["name"] . "\" -type wwwroot\n";
+	foreach($dir["list"] as $account) {
+	  echo "/opt/psa/bin/protdir -u " . $dir["path"] . " -domain " . $extradomain . " -add_user \"" . $account["user"] . "\" -passwd_type encrypted -passwd '" . $account["pass"] . "'\n";
+	};
+
+	// remove directadmin .htaccess
+	if ($backup->getDomain(FALSE) == $extradomain) {
+          echo "rm -v /var/www/vhosts/" . $extradomain . "/httpdocs/" . $dir["path"] . "/.htaccess\n";
+        } else {
+          echo "rm -v /var/www/vhosts/" . $backup->getDomain(FALSE) . "/domains/" . $extradomain . "/" . $dir["path"] . "/.htaccess\n";
+        };
+    };
 
     foreach ($backup->getAliases($extradomain) as $alias) {
         echo "/opt/psa/bin/domalias -c $alias -domain $extradomain\n";
