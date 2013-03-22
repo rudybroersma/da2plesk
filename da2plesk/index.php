@@ -1,4 +1,10 @@
 <?php
+/*
+** DirectAdmin to Plesk Migration script
+**
+** Created by Rudy Broersma <r.broersma@exsilia.net>
+*/
+
 include("includes/color.class.php");
 include("includes/other.class.php");
 include("includes/email.class.php");
