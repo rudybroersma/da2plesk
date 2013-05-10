@@ -95,17 +95,6 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         echo "rm $tmpfname\n";
     }
 
-    // We migrated from imapcopy to imapsync. 
-    echo IMAPSYNC_PATH . "imapsync --host1 " . $ip . " --host2 localhost --user1 " . $pop . "@" . $domain . " --user2 "  . $pop . "@" . $domain . " --password1 " . $mailpw . " --password2 " . $mailpw . "\n";
-    /*
-    // Create imapcopy config file header
-    $handle = fopen("/root/ImapCopy.cfg", "w");
-    fwrite($handle, "SourceServer " . $ip . "\n");
-    fwrite($handle, "SourcePort 143\n");
-    fwrite($handle, "DestServer localhost\n");
-    fwrite($handle, "DestPort 143\n");
-    fwrite($handle, "DenyFlags \"\Recent\"\n");
-
     $popresult = false;
     foreach ($backup->getPOP($extradomain) as $pop) {
         array_push($mailaccounts, $pop . "@" . $extradomain);
@@ -116,19 +105,8 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         };
         echo "/opt/psa/bin/mail -c $pop@$extradomain -mailbox true -passwd '$mailpw' -passwd_type plain\n";
         echo "/opt/psa/bin/spamassassin -u $pop@$extradomain -status true -hits 5 -action del\n";
-        //echo "Copy \"$pop@$extradomain\" \"$mailpw\" \"$pop@$extradomain\" \"$mailpw\" >> $ictmp";
-        fwrite($handle, "Copy \"" . $pop . "@" . $domain . "\" \"" . $mailpw . "\" \"" . $pop . "@" . $domain . "\" \"" . $mailpw . "\"\n");
-        $popresult = true;
+        echo IMAPSYNC_PATH . "imapsync --host1 " . $ip . " --host2 localhost --user1 " . $pop . "@" . $domain . " --user2 "  . $pop . "@" . $domain . " --password1 " . $mailpw . " --password2 " . $mailpw . "\n";
     }
-
-    fclose($handle);
-
-    if ($popresult == true) { 
-        echo "cd /root; imapcopy\n";
-    };
-    
-     */
-    
     
     foreach ($backup->getForward($extradomain) as $forward) {
         if (!in_array($forward['account'] . "@" . $extradomain, $mailaccounts)) {
