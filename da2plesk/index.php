@@ -96,7 +96,7 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
     }
 
     // We migrated from imapcopy to imapsync. 
-    echo IMAPSYNC_PATH . "imapsync --host1 " . $ip . " --host2 localhost --user1 " . $pop . "@" . $domain . " --user2 "  . $pop . "@" . $domain . " --password1 " . $mailpw . " --password2 " . $mailpw;
+    echo IMAPSYNC_PATH . "imapsync --host1 " . $ip . " --host2 localhost --user1 " . $pop . "@" . $domain . " --user2 "  . $pop . "@" . $domain . " --password1 " . $mailpw . " --password2 " . $mailpw . "\n";
     /*
     // Create imapcopy config file header
     $handle = fopen("/root/ImapCopy.cfg", "w");
