@@ -6,7 +6,7 @@ define("IPv6", "IPv6 IP of Plesk server");
 define("SERVICE_PLAN", "Name of your service plan");
 
 define("BACKUP_PATH", "path to your backup directory");
-define("IMAPSYNC_PATH", "path to your imapsync binary");
+define("IMAPSYNC_PATH", "path to your imapsync binary with trailing slash");
 // You can grab a copy of imapsync from https://github.com/imapsync/imapsync
 // Debian deps: apt-get install libmail-imapclient-perl
 
