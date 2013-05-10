@@ -6,16 +6,20 @@ define("IPv6", "IPv6 IP of Plesk server");
 define("SERVICE_PLAN", "Name of your service plan");
 
 define("BACKUP_PATH", "path to your backup directory");
+define("IMAPSYNC_PATH", "path to your imapsync binary");
+// You can grab a copy of imapsync from https://github.com/imapsync/imapsync
+// Debian deps: apt-get install libmail-imapclient-perl
+
 define("EMAIL_PWS", "filename containing email passwords [email][space][password]");
 
 define("MAIL_FROM_ADDR", "Your e-mail address");
 define("MAIL_FROM_NAME", "Your name");
-
 define("SEND_MAIL", false); // Do not send any email, use this for testing.
 
 /* Constants cannot be arrays, so we serialize them */
 define("IGNORE_DB_NAMES", serialize(array("db_collation", "mysql", "psa", "da", "horde", "squirrelmail"))); // Databases to ignore.
 define("IGNORE_DB_USERS", serialize(array("admin", "root", "da_admin", "db_collation"))); // Database usernames to ignore.
+
 
 /* Valid fields for mail_body:
  * #USERNAME#
