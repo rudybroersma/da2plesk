@@ -35,6 +35,58 @@ class Backup {
         return $rows;
     }
 
+    private function getAuthName($domain, $protected_dir) {
+        $htaccess_path = $this->backup_path . "/domains/" . $domain . str_replace("/domains/" . $domain, "", $protected_dir) . "/.htaccess";
+	foreach($this->readFile($htaccess_path) as $row) {
+	  if (strpos($row, "AuthName") !== FALSE) {
+            return str_replace("\"", "", substr($row, strlen("AuthName "), strlen($row)));
+          };
+	};
+    }
+
+    /* Fetch users and (encrypted) passwords from .htpasswd file */
+    private function getUserList($domain, $protected_dir) {
+	$credentials = array();
+
+        $htpasswd_path = $this->backup_path . "/domains/" . $domain . "/.htpasswd" . str_replace("/domains/" . $domain, "", $protected_dir) . "/.htpasswd";
+
+        foreach($this->readFile($htpasswd_path) as $row) {
+          $split_row = explode(":", $row);
+          array_push($credentials, array("user" => $split_row[0], "pass" => $split_row[1]));
+        };
+
+	return $credentials;
+    }
+
+    public function getProtectedDirectories($domain) {
+      $protdir = array();
+      foreach($this->readFile($this->backup_path . "/domains/" . $domain . "/.htpasswd/.protected.list") as $path) {
+	if (strpos($path, "/domains/" . $domain . "/public_html") !== FALSE) { // Must be public accessible directory
+  	  $plesk_path = $path;
+	  $plesk_path = str_replace("/domains/" . $domain . "/public_html", "", $plesk_path);
+	  $plesk_path = str_replace("//", "/", $plesk_path);
+//	  if (substr($plesk_path, 0, 1) == "/") { $plesk_path = substr($plesk_path, 1, strlen($plesk_path)); };
+	  if ($plesk_path == "") { $plesk_path = "/"; };
+
+          $this->other->Log("Backup->getProtectedDirectories", "found protected dir: " . $path, false);
+ 	  array_push($protdir, 
+	    array(
+		"path" => $plesk_path,
+		"name" => $this->getAuthName($domain, $path),
+		"list" => $this->getUserList($domain, $path)
+	    )
+          );
+	};
+      };
+
+      if (count($protdir) == 0) {
+        $this->other->Log("Backup->getProtectedDirectories", "No protected directories for $domain", true);
+	return null;
+      } else {
+        return $protdir;
+      };
+    }
+
     public function getCatchall($domain) {
         if ($domain == "") { echo "ERROR: domain not set\n"; exit; };
         
