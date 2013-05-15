@@ -50,4 +50,6 @@ Nov 21 15:54:19 webserver002 dovecot: auth: Debug: passwd-file(user@domain.com,1
 
   On some systems the $6 should be replaced with $5.
   
-* Edit config.inc.php to point to your newly created password list.
+* Download and install imapsync from https://github.com/imapsync/imapsync.
+
+* Edit config.inc.php to point to your newly created password list and imapsync path.
