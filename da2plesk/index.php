@@ -112,7 +112,7 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         
         if ($mailpw_restored == TRUE) {
             // only run imapsync when we recovered the password. Otherwise its useless.
-          echo IMAPSYNC_PATH . "imapsync --host1 " . $ip . " --host2 localhost --user1 " . $pop . "@" . $domain . " --user2 "  . $pop . "@" . $domain . " --password1 " . $mailpw . " --password2 " . $mailpw . "\n";
+          echo IMAPSYNC_PATH . "imapsync --host1 " . $ip . " --host2 localhost --user1 " . $pop . "@" . $extradomain . " --user2 "  . $pop . "@" . $extradomain . " --password1 " . $mailpw . " --password2 " . $mailpw . "\n";
         };
     }
     
