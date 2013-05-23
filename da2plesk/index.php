@@ -112,13 +112,14 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         
         if ($mailpw_restored == TRUE) {
             // only run imapsync when we recovered the password. Otherwise its useless.
-          echo IMAPSYNC_PATH . "imapsync --host1 " . $ip . " --host2 localhost --user1 " . $pop . "@" . $extradomain . " --user2 "  . $pop . "@" . $extradomain . " --password1 " . $mailpw . " --password2 " . $mailpw . "\n";
+          echo IMAPSYNC_PATH . "imapsync --noreleasecheck --host1 " . $ip . " --host2 localhost --user1 " . $pop . "@" . $extradomain . " --user2 "  . $pop . "@" . $extradomain . " --password1 " . $mailpw . " --password2 " . $mailpw . "\n";
         };
     }
     
     foreach ($backup->getForward($extradomain) as $forward) {
         if (!in_array($forward['account'] . "@" . $extradomain, $mailaccounts)) {
             // Mailaccount is not in array, so we create a new one.
+          $forward['to'] = preg_replace('/\s+/', '', $forward['to']); // remove all spaces
           echo "/opt/psa/bin/mail -c " . $forward['account'] . "@$extradomain -mailbox false -forwarding true -forwarding-addresses add:" . $forward['to'] . "\n";
           echo "/opt/psa/bin/spamassassin -u " . $forward['account'] . "@$extradomain -status true -hits 5 -action del\n";
         } else {
