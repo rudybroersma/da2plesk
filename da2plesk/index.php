@@ -31,9 +31,16 @@ $tld = $tld[0];
 $ip = $backup->getIP();
 $username = $backup->getUsername();
 
-$ictmp = tempnam("/tmp", "imapcopy");
-
 /* BEGIN PRIMARY DOMAIN */
+echo "# Control Panel: http://www.$domain:8880/\n";
+echo "# Gebruikersnaam: $username\n";
+echo "# Wachtwoord: $password\n";
+echo "#\n";
+echo "# FTP: ftp://ftp.$domain/\n";
+echo "# Gebruikersnaam: $username\n";
+echo "# Wachtwoord: $password\n";
+echo "#\n";
+
 echo "/opt/psa/bin/customer -c $username -name $username -passwd $password\n";
 echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"" . SERVICE_PLAN . "\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd $password\n";
 echo "\n";
