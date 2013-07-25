@@ -6,12 +6,14 @@ class Backup {
     private $backup_path;
     private $ignore_db_names;
     private $ignore_db_users;
+    private $ignore_sites;
     
-    public function __construct($path, $names, $users) {
+    public function __construct($path, $names, $users, $sites) {
          $this->other = new Other();
          $this->backup_path = $path;
          $this->ignore_db_names = unserialize($names);
          $this->ignore_db_users = unserialize($users);
+         $this->ignore_sites = unserialize($sites);
     }
     
     public function getPath() {
@@ -194,12 +196,18 @@ class Backup {
                 // OF
                 // als we het eerste domein niet willen overslaan
                 $addDomains[] = $filename;
-                if ($skip == FALSE) { $this->other->Log("Backup->getAdditionalDomains", "Found domain: " . $filename); };
-            }
+
+                if (!in_array($filename, $this->ignore_sites)) {
+                    if ($skip == FALSE) { $this->other->Log("Backup->getAdditionalDomains", "Found domain: " . $filename); };
+                } else {
+                    if ($skip == FALSE) { $this->other->Log("Backup->getAdditionalDomains", "Domain: " . $filename . " is in banlist. Ignored!"); };
+                }
+            };
         };
-        
+
         if (count($addDomains) > 0) { 
-            return $addDomains;
+            return array_diff($addDomains, $this->ignore_sites);
+//            return $addDomains;
         } else {
             $this->other->Log("Backup->getAdditionalDomains", "No additional domains found");
             return FALSE;

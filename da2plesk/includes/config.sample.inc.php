@@ -20,6 +20,7 @@ define("SEND_MAIL", false); // Do not send any email, use this for testing.
 define("IGNORE_DB_NAMES", serialize(array("db_collation", "mysql", "psa", "da", "horde", "squirrelmail"))); // Databases to ignore.
 define("IGNORE_DB_USERS", serialize(array("admin", "root", "da_admin", "db_collation"))); // Database usernames to ignore.
 
+define("IGNORE_SITES", serialize(array("default", "sharedip", "suspended")));
 
 /* Valid fields for mail_body:
  * #USERNAME#
