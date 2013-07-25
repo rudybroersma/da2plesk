@@ -25,11 +25,17 @@ class Email {
                 $buffer = trim($buffer);
                 $row_array = explode(" ", $buffer);
                 if ($row_array[0] == $email) {
-                    $this->other->Log("Email->getPassword", $email . " has password " . $row_array[1]);
-                    return trim($row_array[1]);
+                    $explodeEmail = explode("@", $email);
+                    if (strpos($row_array[1], $explodeEmail[0]) !== false) {
+                        $this->other->Log("Email->getPassword", $email . " has invalid password (username in password is not allowed)", true);
+                    } else {
+                        $this->other->Log("Email->getPassword", $email . " has password " . $row_array[1]);
+                        return trim($row_array[1]);
+                    };
                 };
             }
             if (!feof($handle)) {
+                $this->other->Log("Email->getPassword", $email . " unable to retrieve password", true);
                 return false;
             }
             fclose($handle);
