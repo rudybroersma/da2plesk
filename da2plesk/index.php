@@ -18,6 +18,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
 if (VERSION != 1) {
     echo "Version mismatch. You need to update your configuration file";
+    exit;
 };
 
 $backup = new Backup(BACKUP_PATH, IGNORE_DB_NAMES, IGNORE_DB_USERS, IGNORE_SITES); // backup_path is a constant from the config file containing untarred DA backup
