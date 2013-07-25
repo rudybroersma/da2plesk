@@ -1,5 +1,7 @@
 <?php
 
+define("VERSION", 1);
+
 define("IPv4", "IPv4 IP of Plesk server");
 define("IPv6", "IPv6 IP of Plesk server");
 
