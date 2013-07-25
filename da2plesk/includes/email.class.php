@@ -28,6 +28,7 @@ class Email {
                     $explodeEmail = explode("@", $email);
                     if (strpos($row_array[1], $explodeEmail[0]) !== false) {
                         $this->other->Log("Email->getPassword", $email . " has invalid password (username in password is not allowed)", true);
+                        return false;
                     } else {
                         $this->other->Log("Email->getPassword", $email . " has password " . $row_array[1]);
                         return trim($row_array[1]);
