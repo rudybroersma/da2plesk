@@ -167,11 +167,8 @@ foreach ($backup->getDatabaseList() as $db) {
     };
 }
 
-// fix crontab
-echo "sed -i \"s@/home/" . $username . "/domains/" . $domain . "/public_html@/var/www/vhosts/" . $domain . "/httpdocs@g\" " . $backup->getPath() . "/backup/crontab.conf\n";
-echo "sed -i \"s/\blocal\/\b//g\" " . $backup->getPath() . "/backup/crontab.conf\n";
-echo "cat " . $backup->getPath() . "/backup/crontab.conf | crontab -u" . $username . " -\n";
-// 
+$backup->getCron();
+
 // Send mail to customer
 //$other->sendMail($domain, $username, $password, $backup->getEmail());
 $other->sendMail($domain, $username, $password, "tozz@kijkt.tv");
