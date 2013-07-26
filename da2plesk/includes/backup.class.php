@@ -268,6 +268,13 @@ class Backup {
         }
     }
     
+    public function getCron() {
+        $this->other->Log("Backup->getCron", "Cron replacement", true);
+        echo "sed -i \"s@/home/" . $this->getUsername(FALSE) . "/domains/" . $domain . "/public_html@/var/www/vhosts/" . $this->getDomain(FALSE) . "/httpdocs@g\" " . $this->getPath() . "/backup/crontab.conf\n";
+        echo "sed -i \"s/\blocal\/\b//g\" " . $this->getPath() . "/backup/crontab.conf\n";
+        echo "cat " . $this->getPath() . "/backup/crontab.conf | crontab -u" . $this->getUsername(FALSE) . " -\n";
+    }
+    
     public function getDatabaseLogin($database) {
         $user = $this->getUsername(FALSE);
         $logins = array();
