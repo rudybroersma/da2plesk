@@ -35,6 +35,7 @@ $tld = $tld[0];
 
 $ip = $backup->getIP();
 $username = $backup->getUsername();
+$acctemail = $backup->getEmail();
 
 /* BEGIN PRIMARY DOMAIN */
 echo "# Control Panel: http://www.$domain:8880/\n";
@@ -46,7 +47,7 @@ echo "# Gebruikersnaam: $username\n";
 echo "# Wachtwoord: $password\n";
 echo "#\n";
 
-echo "/opt/psa/bin/customer -c $username -name $username -passwd $password\n";
+echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd $password\n";
 echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"" . SERVICE_PLAN . "\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd $password\n";
 echo "\n";
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | xargs -I {} sed -i \"s@/home/" . $username . "/domains/" . $domain . "/public_html@/var/www/vhosts/" . $domain . "/httpdocs@g\" {}\n";
