@@ -170,13 +170,17 @@ class Backup {
     }
 
     public function getUsername($log = TRUE) {
-        $result = $this->getNVP($this->backup_path . "/backup/user.conf", "username");
+        $result = strtolower($this->getNVP($this->backup_path . "/backup/user.conf", "username"));
         if ($log) { $this->other->Log("Backup->getUsername", $result); };
         return $result;
     }
 
     public function getEmail($log = TRUE) {
-        $result = $this->getNVP($this->backup_path . "/backup/user.conf", "email");
+        $result = strtolower($this->getNVP($this->backup_path . "/backup/user.conf", "email"));
+        
+        $exploded = explode(",", $result);
+        $result = $exploded[0]; // get first mail address.
+        
         if ($log) { $this->other->Log("Backup->getEmail", $result); };
         return $result;
     }
