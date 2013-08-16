@@ -1,11 +1,12 @@
 <?php
 
-define("VERSION", 1);
+define("VERSION", 2);
 
 define("IPv4", "IPv4 IP of Plesk server");
 define("IPv6", "IPv6 IP of Plesk server");
 
-define("SERVICE_PLAN", "Name of your service plan");
+//hardcoded service plan is now removed in favor of passing the service plan number as parameter.
+//define("SERVICE_PLAN", "Name of your service plan");
 
 define("BACKUP_PATH", "path to your backup directory");
 define("IMAPSYNC_PATH", "path to your imapsync binary with trailing slash");

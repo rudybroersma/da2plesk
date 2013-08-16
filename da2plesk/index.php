@@ -11,15 +11,43 @@ include("includes/color.class.php");
 include("includes/other.class.php");
 include("includes/email.class.php");
 include("includes/backup.class.php");
+include("includes/plesk.class.php");
 include("includes/config.inc.php");
 
 // Do not log notices and warnings (imap_open logs notices and warnings on wrong login)
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
-if (VERSION != 1) {
+if (VERSION != 2) {
     echo "Version mismatch. You need to update your configuration file\n";
     exit;
 };
+
+if (isset($argv[1])) {
+  $serviceplan = $argv[1];
+} else {
+  $serviceplan = 0;
+};
+
+$plesk = new Plesk();
+$sp = $plesk->getServicePlans();
+
+if (array_key_exists($serviceplan, $sp)) {
+  $valid_serviceplan = true;
+} else {
+  $valid_serviceplan = false;
+};
+
+if ($valid_serviceplan === false) {
+  echo "Invalid serviceplan given. Please pass the serviceplan number as parameter (eg. php index.php 5): \n\n";
+  foreach($sp as $plan) {
+    echo $plan['id'] . ": " . $plan['name'] . "\n";
+  };
+ 
+  exit;
+} else {
+  $serviceplan_name = $sp[$serviceplan]['name'];
+};
+
 
 $backup = new Backup(BACKUP_PATH, IGNORE_DB_NAMES, IGNORE_DB_USERS, IGNORE_SITES); // backup_path is a constant from the config file containing untarred DA backup
 $other = new Other(MAIL_FROM_ADDR, MAIL_FROM_NAME, SEND_MAIL);
@@ -48,7 +76,7 @@ echo "# Wachtwoord: $password\n";
 echo "#\n";
 
 echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd $password\n";
-echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"" . SERVICE_PLAN . "\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd $password -seo-redirect none\n";
+echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"$serviceplan_name\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd $password -seo-redirect none\n";
 echo "\n";
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | xargs -I {} sed -i \"s@/home/" . $username . "/domains/" . $domain . "/public_html@/var/www/vhosts/" . $domain . "/httpdocs@g\" {}\n";
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
