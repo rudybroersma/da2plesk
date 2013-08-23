@@ -80,6 +80,8 @@ echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"$ser
 echo "\n";
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | xargs -I {} sed -i \"s@/home/" . $username . "/domains/" . $domain . "/public_html@/var/www/vhosts/" . $domain . "/httpdocs@g\" {}\n";
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
+echo "mkdir " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/\n";
+echo "echo \"Redirect 301 /webmail http://webmail." . $domain . "/\" > " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/.htaccess\n";
 echo "cd " . $backup->getPath() . "/domains/" . $domain . "/public_html; /usr/bin/ncftpput -R -u$username -p$password localhost httpdocs .\n";
 
 foreach ($backup->getSubdomains($domain) as $sub) {
@@ -93,6 +95,8 @@ foreach ($backup->getAdditionalDomains(TRUE) as $extradomain) {
     
     echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $extradomain . "/ -type f -print | xargs -I {} sed -i \"s@/home/" . $username . "/domains/" . $extradomain . "/public_html@/var/www/vhosts/" . $domain . "/domains/" . $extradomain . "@g\" {}\n";
     echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $extradomain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
+    echo "mkdir " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/\n";
+    echo "echo \"Redirect 301 /webmail http://webmail." . $domain . "/\" > " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/.htaccess\n";
     echo "cd " . $backup->getPath() . "/domains/" . $extradomain . "/public_html; /usr/bin/ncftpput -R -u$username -p$password localhost domains/" . $extradomain . " .\n";
 
     foreach ($backup->getSubdomains($extradomain) as $sub) {
