@@ -194,7 +194,9 @@ foreach ($backup->getDatabaseList() as $db) {
     echo "/usr/bin/mysql -uadmin -p`cat /etc/psa/.psa.shadow` $db < " . $backup->getPath() . "/backup/" . $db . ".sql\n";
 
     foreach ($backup->getDatabaseLogin($db) as $user) {
-        echo "/opt/psa/bin/database -u $db -add_user " . $user['user'] . " -passwd $password\n";
+# Plesk 11.5 supports 1 user for multiple DBs. Use that feature :)
+#        echo "/opt/psa/bin/database -u $db -add_user " . $user['user'] . " -passwd $password\n";
+        echo "/opt/psa/bin/database --create-dbuser " . $user['user'] . " -domain " . $domain . " -passwd $password -type mysql\n";
         echo "/usr/bin/mysql -uadmin -p`cat /etc/psa/.psa.shadow` mysql -e \"UPDATE mysql.user SET Password = '" . $user['pass'] . "' WHERE User = '" . $user['user'] . "'\"\n";
         echo "/usr/bin/mysql -uadmin -p`cat /etc/psa/.psa.shadow` mysql -e \"FLUSH PRIVILEGES\"\n";
     };
