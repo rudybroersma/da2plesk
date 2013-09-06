@@ -91,7 +91,7 @@ foreach ($backup->getSubdomains($domain) as $sub) {
 
 /* START ADDITIONAL DOMAINS */
 foreach ($backup->getAdditionalDomains(TRUE) as $extradomain) {
-    echo "/opt/psa/bin/site -c $extradomain -hosting true -hst_type phys -webspace-name $domain -www-root domains/$extradomain\n";
+    echo "/opt/psa/bin/site -c $extradomain -hosting true -hst_type phys -webspace-name $domain -www-root domains/$extradomain -seo-redirect none\n";
     
     echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $extradomain . "/ -type f -print | xargs -I {} sed -i \"s@/home/" . $username . "/domains/" . $extradomain . "/public_html@/var/www/vhosts/" . $domain . "/domains/" . $extradomain . "@g\" {}\n";
     echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $extradomain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
@@ -128,9 +128,7 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
     }
 
     foreach ($backup->getPointers($extradomain) as $alias) {
-        echo "/opt/psa/bin/site -c $alias -hosting true -hst_type phys -webspace-name $domain -www-root domains/$alias\n";
-        // TODO: Dit moet een 301 worden.
-        // redirect 301 / http://www.you.com/
+        echo "/opt/psa/bin/site -c $alias -hosting true -hst_type phys -webspace-name $domain -www-root domains/$alias  -seo-redirect none\n";
         $tmpfname = tempnam("/tmp", "damigration");
         $handle = fopen($tmpfname, "w");
         fwrite($handle, "Redirect 301 / http://www." . $extradomain . "/\n");
