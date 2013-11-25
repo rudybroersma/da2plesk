@@ -75,6 +75,19 @@ echo "# Gebruikersnaam: $username\n";
 echo "# Wachtwoord: $password\n";
 echo "#\n";
 
+$of = fopen("logins/" . $domain, "w+");
+fwrite($of, "Geachte heer/mevrouw,\n\nAls klant van ons neemt u onderstaande domeinen en bijbehorende hosting bij ons af.\nZoals aangekondigd zijn we begonnen met het migreren van hosting naar nieuwe servers.\nHieronder vindt u nieuwe logingegevens. Deze migratie moet in principe geruisloos verlopen.\nMocht u toch tegen problemen aanlopen, laat het ons dan vooral weten.\n\n");
+fwrite($of, "# Control Panel: http://www." . $domain . ":8880/\n");
+fwrite($of, "# Gebruikersnaam: " . $username . "\n");
+fwrite($of, "# Wachtwoord: " . $password . "\n");
+fwrite($of, "#\n");
+fwrite($of, "# FTP: ftp://ftp." . $domain . "/\n");
+fwrite($of, "# Gebruikersnaam: " . $username . "\n");
+fwrite($of, "# Wachtwoord: " . $password . "\n");
+fwrite($of, "#\n\n");
+fwrite($of, "Met vriendelijke groet,\nWannahost Support\n");
+fclose($of);
+
 echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd $password\n";
 echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"$serviceplan_name\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd $password -seo-redirect none\n";
 echo "\n";
