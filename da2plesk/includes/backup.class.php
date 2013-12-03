@@ -95,7 +95,7 @@ class Backup {
         $forwards = array();
         foreach($this->readFile($this->backup_path . "/backup/" . $domain . "/email/email.conf") as $row) {
             if (substr($row, 0, 9) == "catchall=" && strstr($row, "@")) {
-                $email = substr($row, 10, strlen($row));
+                $email = substr($row, 9, strlen($row));
                 $this->other->Log("Backup->getCatchall", $domain . " catchall to " . $email, false);
                 return $email;
             }
