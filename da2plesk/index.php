@@ -86,8 +86,7 @@ fwrite($of, "#\n\n");
 fwrite($of, "Met vriendelijke groet,\nWannahost Support\n");
 fclose($of);
 
-echo "/opt/psa/bin/server_pref -u -min_password_strength very_weak"
-echo "/opt/psa/bin/server_pref -u -min_password_strength " . PW_POLICY;
+echo "/opt/psa/bin/server_pref -u -min_password_strength very_weak";
 
 echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd $password\n";
 echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"$serviceplan_name\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd $password -seo-redirect none\n";
@@ -217,6 +216,8 @@ foreach ($backup->getDatabaseList() as $db) {
 }
 
 $backup->getCron();
+
+echo "/opt/psa/bin/server_pref -u -min_password_strength " . PW_POLICY;
 
 // Send mail to customer
 //$other->sendMail($domain, $username, $password, $backup->getEmail());
