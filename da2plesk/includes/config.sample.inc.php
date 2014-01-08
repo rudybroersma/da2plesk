@@ -1,6 +1,15 @@
 <?php
 
-define("VERSION", 2);
+define("VERSION", 3);
+
+/* Prior to running migration this script sets the password policy to low. Define your default setting here.
+ * after all migration commands have ran it will set the password policy to the value defined here.
+ *
+ * Available options:
+ * very_weak|weak|medium|strong|very_strong
+ */
+
+define("PW_POLICY", "strong");
 
 define("IPv4", "IPv4 IP of Plesk server");
 define("IPv6", "IPv6 IP of Plesk server");

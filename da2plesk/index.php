@@ -17,7 +17,7 @@ include("includes/config.inc.php");
 // Do not log notices and warnings (imap_open logs notices and warnings on wrong login)
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
-if (VERSION != 2) {
+if (VERSION != 3) {
     echo "Version mismatch. You need to update your configuration file\n";
     exit;
 };
@@ -58,8 +58,6 @@ $password = $other->generatePassword();
 $mailaccounts = array();
 
 $domain = $backup->getDomain();
-$tld = explode(".", $domain);
-$tld = $tld[0];
 
 $ip = $backup->getIP();
 $username = $backup->getUsername();
@@ -87,6 +85,9 @@ fwrite($of, "# Wachtwoord: " . $password . "\n");
 fwrite($of, "#\n\n");
 fwrite($of, "Met vriendelijke groet,\nWannahost Support\n");
 fclose($of);
+
+echo "/opt/psa/bin/server_pref -u -min_password_strength very_weak"
+echo "/opt/psa/bin/server_pref -u -min_password_strength " . PW_POLICY;
 
 echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd $password\n";
 echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"$serviceplan_name\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd $password -seo-redirect none\n";
