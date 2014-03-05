@@ -163,7 +163,9 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
             $mailpw_restored = TRUE;
         }
         
-        echo "/opt/psa/bin/mail -c $pop@$extradomain -mailbox true -passwd '$mailpw' -passwd_type plain\n";
+        echo "/opt/psa/bin/mail -c $pop@$extradomain -mailbox true -passwd '$password' -passwd_type plain\n";
+        echo "/opt/psa/bin/mail -u $pop@$extradomain -passwd '$mailpw' -passwd_type plain\n";
+
         echo "/opt/psa/bin/spamassassin -u $pop@$extradomain -status true -hits 5 -action del\n";
         
         if ($mailpw_restored == TRUE) {
