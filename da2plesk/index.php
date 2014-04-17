@@ -95,8 +95,9 @@ echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f 
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
 echo "mkdir " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/\n";
 echo "echo \"Redirect 301 /webmail http://webmail." . $domain . "/\" > " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/.htaccess\n";
-echo "cd " . $backup->getPath() . "/domains/" . $domain . "/public_html; /usr/bin/ncftpput -R -u$username -p$password localhost httpdocs .\n";
-
+#echo "cd " . $backup->getPath() . "/domains/" . $domain . "/public_html; /usr/bin/ncftpput -R -u$username -p$password localhost httpdocs .\n";
+echo "cd " . $backup->getPath() . "/domains/" . $domain . "/public_html; /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:$password@localhost && cd httpdocs && mirror -R .'\n";
+#/usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://huppa:ebybesupa@localhost && cd httpdocs && mirror -R .'
 foreach ($backup->getSubdomains($domain) as $sub) {
     echo "/opt/psa/bin/subdomain -c $sub -domain $domain -www-root /httpdocs/$sub -php true\n";
 };
@@ -110,7 +111,8 @@ foreach ($backup->getAdditionalDomains(TRUE) as $extradomain) {
     echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $extradomain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
     echo "mkdir " . $backup->getPath() . "/domains/" . $extradomain . "/public_html/webmail/\n";
     echo "echo \"Redirect 301 /webmail http://webmail." . $extradomain . "/\" > " . $backup->getPath() . "/domains/" . $extradomain . "/public_html/webmail/.htaccess\n";
-    echo "cd " . $backup->getPath() . "/domains/" . $extradomain . "/public_html; /usr/bin/ncftpput -R -u$username -p$password localhost domains/" . $extradomain . " .\n";
+    #echo "cd " . $backup->getPath() . "/domains/" . $extradomain . "/public_html; /usr/bin/ncftpput -R -u$username -p$password localhost domains/" . $extradomain . " .\n";
+     echo "cd " . $backup->getPath() . "/domains/" . $extradomain . "/public_html; /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:$password@localhost && cd domains/$extradomain && mirror -R .'\n";
 
     foreach ($backup->getSubdomains($extradomain) as $sub) {
         echo "/opt/psa/bin/subdomain -c $sub -domain $extradomain -www-root /domains/$extradomain/$sub -php true\n";
@@ -123,13 +125,13 @@ foreach ($backup->getAdditionalDomains(TRUE) as $extradomain) {
 foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
 
     foreach($backup->getProtectedDirectories($extradomain) as $dir) {
-	echo "/opt/psa/bin/protdir -c " . $dir["path"] . " -domain " . $extradomain . " -title \"" . $dir["name"] . "\" -type wwwroot\n";
-	foreach($dir["list"] as $account) {
-	  echo "/opt/psa/bin/protdir -u " . $dir["path"] . " -domain " . $extradomain . " -add_user \"" . $account["user"] . "\" -passwd_type encrypted -passwd '" . $account["pass"] . "'\n";
-	};
+        echo "/opt/psa/bin/protdir -c " . $dir["path"] . " -domain " . $extradomain . " -title \"" . $dir["name"] . "\" -type wwwroot\n";
+        foreach($dir["list"] as $account) {
+          echo "/opt/psa/bin/protdir -u " . $dir["path"] . " -domain " . $extradomain . " -add_user \"" . $account["user"] . "\" -passwd_type encrypted -passwd '" . $account["pass"] . "'\n";
+        };
 
-	// remove directadmin .htaccess
-	if ($backup->getDomain(FALSE) == $extradomain) {
+        // remove directadmin .htaccess
+        if ($backup->getDomain(FALSE) == $extradomain) {
           echo "rm -v /var/www/vhosts/" . $extradomain . "/httpdocs/" . $dir["path"] . "/.htaccess\n";
         } else {
           echo "rm -v /var/www/vhosts/" . $backup->getDomain(FALSE) . "/domains/" . $extradomain . "/" . $dir["path"] . "/.htaccess\n";
@@ -163,9 +165,7 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
             $mailpw_restored = TRUE;
         }
         
-        echo "/opt/psa/bin/mail -c $pop@$extradomain -mailbox true -passwd '$password' -passwd_type plain\n";
-        echo "/opt/psa/bin/mail -u $pop@$extradomain -passwd '$mailpw' -passwd_type plain\n";
-
+        echo "/opt/psa/bin/mail -c $pop@$extradomain -mailbox true -passwd '$mailpw' -passwd_type plain\n";
         echo "/opt/psa/bin/spamassassin -u $pop@$extradomain -status true -hits 5 -action del\n";
         
         if ($mailpw_restored == TRUE) {
