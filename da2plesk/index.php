@@ -193,9 +193,9 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
     $catchall = $backup->getCatchall($extradomain);
     if ($catchall != FALSE) {  
         // Catchall is configured
-        echo "/opt/psa/admin/bin/mailmng --set-catchall --domain-name=" . $extradomain . " --email=" . $catchall . "\n";
+        echo "/opt/psa/admin/bin/mailmng-domain --set-catchall --domain-name=" . $extradomain . " --email=" . $catchall . "\n";
     } else {
-        echo "/opt/psa/admin/bin/mailmng --set-reject --domain-name=" . $extradomain . "\n";
+        echo "/opt/psa/admin/bin/mailmng-domain --set-reject --domain-name=" . $extradomain . "\n";
     }
 }
 
