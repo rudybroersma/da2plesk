@@ -101,8 +101,8 @@ class Backup {
             }
 
             if ($row == "catchall="  . $this->getUsername(FALSE)) {
-                return $this->getUsername(FALSE) . "@"  . $domain;
                 $this->other->Log("Backup->getCatchall", $domain . " catchall to system account", false);
+                return $this->getUsername(FALSE) . "@"  . $domain;
             }
             
         }
