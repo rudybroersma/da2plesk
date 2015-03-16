@@ -82,7 +82,7 @@ class Backup {
       };
 
       if (count($protdir) == 0) {
-        $this->other->Log("Backup->getProtectedDirectories", "No protected directories for $domain", true);
+        $this->other->Log("Backup->getProtectedDirectories", "No protected directories for " . $domain, true);
 	return null;
       } else {
         return $protdir;
