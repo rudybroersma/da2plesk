@@ -10,7 +10,11 @@ class Colors {
     private $foreground_colors = array();
     private $background_colors = array();
 
-    public function __construct() {
+    private $useColor;
+    
+    public function __construct($useColor) {
+        $this->useColor = $useColor;
+        
         // Set up shell colors
         $this->foreground_colors['black'] = '0;30';
         $this->foreground_colors['dark_gray'] = '1;30';
@@ -41,19 +45,23 @@ class Colors {
 
     // Returns colored string
     public function getColoredString($string, $foreground_color = null, $background_color = null) {
-        $colored_string = "";
+        if ($this->useColor !== FALSE) {
+            $colored_string = "";
 
-        // Check if given foreground color found
-        if (isset($this->foreground_colors[$foreground_color])) {
-            $colored_string .= "\033[" . $this->foreground_colors[$foreground_color] . "m";
+            // Check if given foreground color found
+            if (isset($this->foreground_colors[$foreground_color])) {
+                $colored_string .= "\033[" . $this->foreground_colors[$foreground_color] . "m";
+            }
+            // Check if given background color found
+            if (isset($this->background_colors[$background_color])) {
+                $colored_string .= "\033[" . $this->background_colors[$background_color] . "m";
+            }
+            
+            // Add string and end coloring
+            $colored_string .= $string . "\033[0m";
+        } else {
+            $colored_string = $string;
         }
-        // Check if given background color found
-        if (isset($this->background_colors[$background_color])) {
-            $colored_string .= "\033[" . $this->background_colors[$background_color] . "m";
-        }
-
-        // Add string and end coloring
-        $colored_string .= $string . "\033[0m";
 
         return $colored_string;
     }

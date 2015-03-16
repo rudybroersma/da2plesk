@@ -3,6 +3,8 @@
 class Other {
 
     const SPACE_LENGTH = 40;
+
+    const USE_COLOR = FALSE;
     const TAG_COLOR = "yellow";
     const MSG_COLOR = "light_green";
     const BG_COLOR = "black";
@@ -14,7 +16,7 @@ class Other {
     private $send_mail = false;
 
     public function __construct($mail_from_addr, $mail_from_name, $send_mail) {
-        $this->colors = new Colors();
+        $this->colors = new Colors(self::USE_COLOR);
 
         $this->mail_from_addr = $mail_from_addr;
         $this->mail_from_name = $mail_from_name;

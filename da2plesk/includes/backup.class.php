@@ -111,6 +111,18 @@ class Backup {
         foreach($this->readFile($this->backup_path . "/backup/" . $domain . "/email/aliases") as $row) {
             if ($row != $this->getUsername(FALSE) . ":" . $this->getUsername(FALSE)) {
                 $forward = explode(":", $row);
+
+                #$forward[0] is forward mail address to create.
+                #$forward[1] is where we forward to. Can be multiple addresses.
+
+                # Replace the system username with the full e-mail addresses.
+                if (strstr($forward[1], $this->getUsername(FALSE)) !== FALSE) {
+                    # Replace all midline occurences  
+                    $forward[1] = str_replace("," . $this->getUsername() . ",", "," . $this->getUsername() . "@" . $domain . ",", $forward[1]); // username is found within a list of multiple addresses. 
+                    $forward[1] = preg_replace("/^" . $this->getUsername() . "/", $this->getUsername() . "@"  . $domain, $forward[1]);
+                    $forward[1] = preg_replace("/" . $this->getUsername() . "$/", $this->getUsername() . "@"  . $domain, $forward[1]);
+                };
+
                 $this->other->Log("Backup->getForward", $forward[0] . " to " . $forward[1]);
                 $forwards[] = array("account" => $forward[0], "to" => $forward[1]);
             }
@@ -134,9 +146,12 @@ class Backup {
             $this->other->Log("Backup->getPOP", $popaccount[0] . "@" . $domain);
         }
         
+        $popaccounts[] = $this->getUsername();
+        
         if (count($popaccounts) > 0) {
             return $popaccounts;
         } else {
+            /* Because we now include the system user as well, we will never get here. Leave it for legacy purposes or something :] */
             $this->other->Log("Backup->getPOP", "No POP accounts found for $domain", true);
         }
     }
