@@ -91,22 +91,33 @@ class Backup {
 
     public function getCatchall($domain) {
         if ($domain == "") { echo "ERROR: domain not set\n"; exit; };
-        
+
         $forwards = array();
         foreach($this->readFile($this->backup_path . "/backup/" . $domain . "/email/email.conf") as $row) {
-            if (substr($row, 0, 9) == "catchall=" && strstr($row, "@")) {
-                $email = substr($row, 9, strlen($row));
-                $this->other->Log("Backup->getCatchall", $domain . " catchall to " . $email, false);
-                return $email;
-            }
+            if (substr($row, 0, 9) == "catchall=") {
+                $catchall = explode("=", $row);
+                if (strstr($catchall[1], $this->getUsername(FALSE)) !== FALSE) {
+                    # Replace all midline occurences  
+                    $catchall[1] = str_replace("," . $this->getUsername(FALSE) . ",", "," . $this->getUsername(FALSE) . "@" . $domain . ",", $catchall[1]); // username is found within a list of multiple addresses. 
+                    $catchall[1] = preg_replace("/^" . $this->getUsername(FALSE) . "/", $this->getUsername(FALSE) . "@"  . $domain, $catchall[1]);
+                    $catchall[1] = preg_replace("/" . $this->getUsername(FALSE) . "$/", $this->getUsername(FALSE) . "@"  . $domain, $catchall[1]);
+                };
 
-            if ($row == "catchall="  . $this->getUsername(FALSE)) {
-                $this->other->Log("Backup->getCatchall", $domain . " catchall to system account", false);
-                return $this->getUsername(FALSE) . "@"  . $domain;
-            }
-            
+                if (substr_count($catchall[1], ",") > 1) {
+                    $this->other->Log("Backup->getCatchall", $domain . " has catchall to multiple mail addresses. Plesk does not support this. Using first only.", true);
+                    $temp = explode(",", $catchall[1]);
+                    $catchall[1] = $temp[0];
+                };
+
+                if (strstr($catchall[1], "@")) {
+                    $email = substr($row, 9, strlen($row));
+                    $this->other->Log("Backup->getCatchall", $domain . " catchall to " . $catchall[1], false);
+                    return $catchall[1]; 
+                }
+
+            };
         }
-        
+
         $this->other->Log("Backup->getCatchall", $domain . " has no catchall address" , true);
     }
 
