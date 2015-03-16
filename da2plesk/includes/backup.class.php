@@ -99,6 +99,12 @@ class Backup {
                 $this->other->Log("Backup->getCatchall", $domain . " catchall to " . $email, false);
                 return $email;
             }
+
+            if ($row == "catchall="  . $this->getUsername(FALSE)) {
+                return $this->getUsername(FALSE) . "@"  . $domain;
+                $this->other->Log("Backup->getCatchall", $domain . " catchall to system account", false);
+            }
+            
         }
         
         $this->other->Log("Backup->getCatchall", $domain . " has no catchall address" , true);
@@ -118,9 +124,9 @@ class Backup {
                 # Replace the system username with the full e-mail addresses.
                 if (strstr($forward[1], $this->getUsername(FALSE)) !== FALSE) {
                     # Replace all midline occurences  
-                    $forward[1] = str_replace("," . $this->getUsername() . ",", "," . $this->getUsername() . "@" . $domain . ",", $forward[1]); // username is found within a list of multiple addresses. 
-                    $forward[1] = preg_replace("/^" . $this->getUsername() . "/", $this->getUsername() . "@"  . $domain, $forward[1]);
-                    $forward[1] = preg_replace("/" . $this->getUsername() . "$/", $this->getUsername() . "@"  . $domain, $forward[1]);
+                    $forward[1] = str_replace("," . $this->getUsername(FALSE) . ",", "," . $this->getUsername(FALSE) . "@" . $domain . ",", $forward[1]); // username is found within a list of multiple addresses. 
+                    $forward[1] = preg_replace("/^" . $this->getUsername(FALSE) . "/", $this->getUsername(FALSE) . "@"  . $domain, $forward[1]);
+                    $forward[1] = preg_replace("/" . $this->getUsername(FALSE) . "$/", $this->getUsername(FALSE) . "@"  . $domain, $forward[1]);
                 };
 
                 $this->other->Log("Backup->getForward", $forward[0] . " to " . $forward[1]);
@@ -146,7 +152,7 @@ class Backup {
             $this->other->Log("Backup->getPOP", $popaccount[0] . "@" . $domain);
         }
         
-        $popaccounts[] = $this->getUsername();
+        $popaccounts[] = $this->getUsername(FALSE);
         
         if (count($popaccounts) > 0) {
             return $popaccounts;
