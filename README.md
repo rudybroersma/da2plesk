@@ -46,9 +46,11 @@ Succesful logins are now logged to /var/log/maillog:
 Nov 21 15:54:19 webserver002 dovecot: auth: Debug: passwd-file(user@domain.com,127.0.0.1): MD5-CRYPT(UseRp4ssw0rd) is a match '$1$fojfvco9jg9j4gt9jt', try CRYPT scheme instead
 
 * Use the following command to build a clean list of users and passwords:
-  cat /var/log/maillog | grep "is a match" | grep "passwd-file" | awk '{ print $8 " " $9 }' | sed "s/[(),]/ /g" |  sed 's/[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}//g' | awk '{ print $2 " " $6 }' | sort | uniq > /root/emailpws
 
-  On some systems the $6 should be replaced with $5.
+  grep -h "is a match" /var/log/mail.log{.{99..1},} 2>/dev/null | grep "passwd-file" | awk '{print $8 " " $9 }' | sed   's#passwd-file(##g;s#)$##g;s#,.*): MD5-CRYPT(# #g'  | sort | uniq > /root/emailpws
+
+  On some systems the $8 and $9 should be replaced with $7 and $8. Also, on some systems the maillog is in  
+  /var/log/maillog.* instead of /var/log/mail.log.*
   
 * Download and install imapsync from https://github.com/imapsync/imapsync.
 
