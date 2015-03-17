@@ -17,51 +17,62 @@ include("includes/config.inc.php");
 // Do not log notices and warnings (imap_open logs notices and warnings on wrong login)
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
-if (VERSION != 3) {
+if (VERSION != 4) {
     echo "Version mismatch. You need to update your configuration file\n";
     exit;
 };
 
-if (isset($argv[1])) {
-  $serviceplan = $argv[1];
-} else {
-  $serviceplan = 0;
-};
-
+$backup = new Backup(BACKUP_PATH, IGNORE_DB_NAMES, IGNORE_DB_USERS, IGNORE_SITES); // backup_path is a constant from the config file containing untarred DA backup
+$other = new Other(MAIL_FROM_ADDR, MAIL_FROM_NAME, SEND_MAIL, DEBUG);
+$mail = new Email(EMAIL_PWS); // email_pws is a constant from the config file, containing email passwords
 $plesk = new Plesk();
 $sp = $plesk->getServicePlans();
 
-if (array_key_exists($serviceplan, $sp)) {
-  $valid_serviceplan = true;
-} else {
-  $valid_serviceplan = false;
-};
+$arguments = $other->parseArguments($argv);
 
-if ($valid_serviceplan === false) {
-  echo "Invalid serviceplan given. Please pass the serviceplan number as parameter (eg. php index.php 5): \n\n";
+if (array_key_exists("list-serviceplans", $arguments)) {
   foreach($sp as $plan) {
     echo $plan['id'] . ": " . $plan['name'] . "\n";
   };
  
   exit;
+}
+
+if (array_key_exists("username", $arguments)) {
+    $username = $arguments['username'];
 } else {
-  $serviceplan_name = $sp[$serviceplan]['name'];
+    $username = $backup->getUsername();
 };
 
-
-$backup = new Backup(BACKUP_PATH, IGNORE_DB_NAMES, IGNORE_DB_USERS, IGNORE_SITES); // backup_path is a constant from the config file containing untarred DA backup
-$other = new Other(MAIL_FROM_ADDR, MAIL_FROM_NAME, SEND_MAIL);
-$mail = new Email(EMAIL_PWS); // email_pws is a constant from the config file, containing email passwords
-
-$password = $other->generatePassword();
+if (array_key_exists("password", $arguments)) {
+    $password = $arguments['password'];
+} else {
+    $password = $other->generatePassword();
+};
 
 $mailaccounts = array();
-
 $domain = $backup->getDomain();
 
 $ip = $backup->getIP();
-$username = $backup->getUsername();
 $acctemail = $backup->getEmail();
+
+if (array_key_exists("list-domains", $arguments)) {
+    # output a list of all domains in this backup
+    foreach($backup->getAdditionalDomains(FALSE) as $domain) {
+        echo $domain . "\n";
+    }
+    
+    exit;
+}
+
+if (array_key_exists("serviceplan", $arguments) && array_key_exists($arguments['serviceplan'], $sp)) {
+  $valid_serviceplan = true;
+  $serviceplan = $arguments['serviceplan'];
+  $serviceplan_name = $sp[$serviceplan]['name'];  
+} else {
+  echo "Invalid serviceplan given. Please pass the serviceplan number as parameter (eg. php index.php --serviceplan=5): \n\n";
+  exit;
+};
 
 /* BEGIN PRIMARY DOMAIN */
 echo "# Control Panel: http://www.$domain:8880/\n";
@@ -127,11 +138,14 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
           echo "/opt/psa/bin/protdir -u " . $dir["path"] . " -domain " . $extradomain . " -add_user \"" . $account["user"] . "\" -passwd_type encrypted -passwd '" . $account["pass"] . "'\n";
         };
 
-        // remove directadmin .htaccess
+        // Function changed. We previously removed the .htaccess here.
+        // We now only remove the Auth lines because Plesk does this in Apache config, where DA does this in .htaccess.
         if ($backup->getDomain(FALSE) == $extradomain) {
-          echo "rm -v /var/www/vhosts/" . $extradomain . "/httpdocs/" . $dir["path"] . "/.htaccess\n";
+          echo "sed -i \"/^Auth/d\" /var/www/vhosts/" . $extradomain . "/httpdocs/" . $dir["path"] . "/.htaccess\n";
+#          echo "rm -v /var/www/vhosts/" . $extradomain . "/httpdocs/" . $dir["path"] . "/.htaccess\n";
         } else {
-          echo "rm -v /var/www/vhosts/" . $backup->getDomain(FALSE) . "/domains/" . $extradomain . "/" . $dir["path"] . "/.htaccess\n";
+          echo "sed -i \"/^Auth/d\" /var/www/vhosts/" . $backup->getDomain(FALSE) . "/domains/" . $extradomain . "/" . $dir["path"] . "/.htaccess\n";
+#          echo "rm -v /var/www/vhosts/" . $backup->getDomain(FALSE) . "/domains/" . $extradomain . "/" . $dir["path"] . "/.htaccess\n";
         };
     };
 
@@ -225,6 +239,3 @@ echo "/opt/psa/bin/server_pref -u -min_password_strength " . PW_POLICY . "\n";
 $other->sendMail($domain, $username, $password, "tozz@kijkt.tv");
 
 // DO NOT FORGET TO DO SOME DNS MAGIC!
-
-
-?>
