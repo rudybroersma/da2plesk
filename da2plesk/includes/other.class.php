@@ -46,6 +46,10 @@ STR;
         $this->send_email = $send_mail;
     }
 
+    public function setDebug($debug) {
+        $this->debug = $debug;
+    }
+    
     # Credits go where credits due: https://gist.githubusercontent.com/magnetik/2959619/raw/f7b6eb0521086755e5c17f5b622d376292906e4a/php-cli.php
     public function parseArguments($argv) {
         array_shift($argv);

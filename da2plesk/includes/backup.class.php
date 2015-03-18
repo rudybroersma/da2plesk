@@ -2,14 +2,17 @@
 class Backup {
     //const BACKUP_PATH = "/tmp/feel";
     
+    private $debug;
     private $other;
     private $backup_path;
     private $ignore_db_names;
     private $ignore_db_users;
     private $ignore_sites;
     
-    public function __construct($path, $names, $users, $sites) {
+    public function __construct($path, $names, $users, $sites, $debug) {
          $this->other = new Other();
+         $this->other->setDebug($debug);
+         
          $this->backup_path = $path;
          $this->ignore_db_names = unserialize($names);
          $this->ignore_db_users = unserialize($users);

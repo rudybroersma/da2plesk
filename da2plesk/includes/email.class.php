@@ -4,11 +4,13 @@
  * 
  */
 class Email {
+    private $debug;
     private $other;
     private $filename;
     
-    public function __construct($filename) {
+    public function __construct($filename, $debug) {
         $this->other = new Other();
+        $this->other->setDebug($debug);
         $this->filename = $filename;
         
         if (!file_exists($this->filename)) {

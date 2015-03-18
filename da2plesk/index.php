@@ -22,9 +22,9 @@ if (VERSION != 4) {
     exit;
 };
 
-$backup = new Backup(BACKUP_PATH, IGNORE_DB_NAMES, IGNORE_DB_USERS, IGNORE_SITES); // backup_path is a constant from the config file containing untarred DA backup
+$backup = new Backup(BACKUP_PATH, IGNORE_DB_NAMES, IGNORE_DB_USERS, IGNORE_SITES, DEBUG); // backup_path is a constant from the config file containing untarred DA backup
 $other = new Other(MAIL_FROM_ADDR, MAIL_FROM_NAME, SEND_MAIL, DEBUG);
-$mail = new Email(EMAIL_PWS); // email_pws is a constant from the config file, containing email passwords
+$mail = new Email(EMAIL_PWS, DEBUG); // email_pws is a constant from the config file, containing email passwords
 $plesk = new Plesk();
 $sp = $plesk->getServicePlans();
 
