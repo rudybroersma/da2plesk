@@ -24,6 +24,7 @@ The following parameters return informational output only:
             
 --list-serviceplans  to request a list of serviceplan IDs
 --list-domains       retrieve a list of all domains listed in this backup
+--list-username      retrieve username from this backup
 --help               get this help text
 
 

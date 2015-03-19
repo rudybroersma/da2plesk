@@ -38,6 +38,11 @@ if (array_key_exists("list-serviceplans", $arguments)) {
   exit;
 }
 
+if (array_key_exists("list-username", $arguments)) {
+  echo $backup->getUsername();
+  exit;
+}
+
 if (array_key_exists("username", $arguments)) {
     $username = $arguments['username'];
 } else {
