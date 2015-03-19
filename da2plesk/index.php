@@ -43,6 +43,11 @@ if (array_key_exists("list-username", $arguments)) {
   exit;
 }
 
+if (array_key_exists("list-email", $arguments)) {
+  echo $backup->getEmail();
+  exit;
+}
+
 if (array_key_exists("username", $arguments)) {
     $username = $arguments['username'];
 } else {
