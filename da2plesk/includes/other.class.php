@@ -26,6 +26,7 @@ The following parameters return informational output only:
 --list-domains       retrieve a list of all domains listed in this backup
 --list-username      retrieve username from this backup
 --list-email         retrieve email address from this backup
+--generate-password  generate random password
 --help               get this help text
 
 

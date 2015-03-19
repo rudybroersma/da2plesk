@@ -43,6 +43,11 @@ if (array_key_exists("list-username", $arguments)) {
   exit;
 }
 
+if (array_key_exists("generate-password", $arguments)) {
+  echo $other->generatePassword();
+  exit;
+}
+
 if (array_key_exists("list-email", $arguments)) {
   echo $backup->getEmail();
   exit;
