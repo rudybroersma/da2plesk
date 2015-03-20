@@ -245,8 +245,11 @@ class Backup {
         };
 
         if (count($addDomains) > 0) { 
-            return array_diff($addDomains, $this->ignore_sites);
-//            return $addDomains;
+            $addDomains = array_diff($addDomains, $this->ignore_sites);
+            foreach($addDomains as $domain) {
+                $addDomains = array_diff($addDomains, $this->getSubdomains($domain));
+            }
+            return $addDomains;
         } else {
             $this->other->Log("Backup->getAdditionalDomains", "No additional domains found");
             return FALSE;
