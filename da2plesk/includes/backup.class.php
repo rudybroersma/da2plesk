@@ -247,7 +247,11 @@ class Backup {
         if (count($addDomains) > 0) { 
             $addDomains = array_diff($addDomains, $this->ignore_sites);
             foreach($addDomains as $domain) {
-                $addDomains = array_diff($addDomains, $this->getSubdomains($domain));
+                $subDomains = array();
+                foreach($this->getSubdomains($domain) as $subdomain) {
+                  $subDomains[] = $subdomain . "." . $domain;
+                };
+                $addDomains = array_diff($addDomains, $subDomains);
             }
             return $addDomains;
         } else {
@@ -255,6 +259,7 @@ class Backup {
             return FALSE;
         }
     }
+    
     public function getDomain($log = TRUE) {
         $result = $this->getNVP($this->backup_path . "/backup/user.conf", "domain");
         if ($log) { $this->other->Log("Backup->getDomain", $result); }; 

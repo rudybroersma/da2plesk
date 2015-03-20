@@ -75,6 +75,12 @@ if (array_key_exists("list-domains", $arguments)) {
     # output a list of all domains in this backup
     foreach($backup->getAdditionalDomains(FALSE) as $domain) {
         echo $domain . "\n";
+        foreach($backup->getPointers($domain) as $domain) {
+            echo $domain . "\n";
+        }
+        foreach($backup->getAliases($domain) as $domain) {
+            echo $domain . "\n";
+        }
     }
     
     exit;
