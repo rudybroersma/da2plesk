@@ -24,6 +24,8 @@ The following parameters return informational output only:
             
 --list-serviceplans  to request a list of serviceplan IDs
 --list-domains       retrieve a list of all domains listed in this backup
+--list-aliases       retrieve a list of all aliases
+--list-pointers      retrieve a list of all pointers
 --list-username      retrieve username from this backup
 --list-email         retrieve email address from this backup
 --generate-password  generate random password
