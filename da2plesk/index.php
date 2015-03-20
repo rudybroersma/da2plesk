@@ -120,14 +120,14 @@ fclose($of);
 
 echo "/opt/psa/bin/server_pref -u -min_password_strength very_weak\n";
 
-echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd $password\n";
-echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"$serviceplan_name\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd $password -seo-redirect none\n";
+echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd \"$password\"\n";
+echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"$serviceplan_name\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd \"$password\" -seo-redirect none\n";
 echo "\n";
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | xargs -I {} sed -i \"s@/home/" . $username . "/domains/" . $domain . "/public_html@/var/www/vhosts/" . $domain . "/httpdocs@g\" {}\n";
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
 echo "mkdir " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/\n";
 echo "echo \"Redirect 301 /webmail http://webmail." . $domain . "/\" > " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/.htaccess\n";
-echo "cd " . $backup->getPath() . "/domains/" . $domain . "/public_html && /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:$password@localhost && cd httpdocs && mirror -R .'\n";
+echo "cd " . $backup->getPath() . "/domains/" . $domain . "/public_html && /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:\"$password\"@localhost && cd httpdocs && mirror -R .'\n";
 foreach ($backup->getSubdomains($domain) as $sub) {
     echo "/opt/psa/bin/subdomain -c $sub -domain $domain -www-root /httpdocs/$sub -php true\n";
 };
@@ -141,7 +141,7 @@ foreach ($backup->getAdditionalDomains(TRUE) as $extradomain) {
     echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $extradomain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
     echo "mkdir " . $backup->getPath() . "/domains/" . $extradomain . "/public_html/webmail/\n";
     echo "echo \"Redirect 301 /webmail http://webmail." . $extradomain . "/\" > " . $backup->getPath() . "/domains/" . $extradomain . "/public_html/webmail/.htaccess\n";
-    echo "cd " . $backup->getPath() . "/domains/" . $extradomain . "/public_html && /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:$password@localhost && cd domains/$extradomain && mirror -R .'\n";
+    echo "cd " . $backup->getPath() . "/domains/" . $extradomain . "/public_html && /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:\"$password\"@localhost && cd domains/$extradomain && mirror -R .'\n";
 
     foreach ($backup->getSubdomains($extradomain) as $sub) {
         echo "/opt/psa/bin/subdomain -c $sub -domain $extradomain -www-root /domains/$extradomain/$sub -php true\n";
@@ -181,7 +181,7 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         fwrite($handle, "Redirect 301 / http://www." . $extradomain . "/\n");
         fclose($handle);
 
-        echo "/usr/bin/ncftpput -c -u$username -p$password localhost domains/$alias/.htaccess < $tmpfname\n";
+        echo "/usr/bin/ncftpput -c -u$username -p\"$password\" localhost domains/$alias/.htaccess < $tmpfname\n";
         echo "rm $tmpfname\n";
     }
 
@@ -245,7 +245,7 @@ foreach ($backup->getDatabaseList() as $db) {
     foreach ($backup->getDatabaseLogin($db) as $user) {
 # Plesk 11.5 supports 1 user for multiple DBs. Use that feature :)
 #        echo "/opt/psa/bin/database -u $db -add_user " . $user['user'] . " -passwd $password\n";
-        echo "/opt/psa/bin/database --create-dbuser " . $user['user'] . " -domain " . $domain . " -passwd $password -type mysql\n";
+        echo "/opt/psa/bin/database --create-dbuser " . $user['user'] . " -domain " . $domain . " -passwd \"$password\" -type mysql\n";
         echo "/usr/bin/mysql -uadmin -p`cat /etc/psa/.psa.shadow` mysql -e \"UPDATE mysql.user SET Password = '" . $user['pass'] . "' WHERE User = '" . $user['user'] . "'\"\n";
         echo "/usr/bin/mysql -uadmin -p`cat /etc/psa/.psa.shadow` mysql -e \"FLUSH PRIVILEGES\"\n";
     };
