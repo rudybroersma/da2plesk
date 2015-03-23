@@ -140,7 +140,7 @@ echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f 
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
 echo "mkdir " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/\n";
 echo "echo \"Redirect 301 /webmail http://webmail." . $domain . "/\" > " . $backup->getPath() . "/domains/" . $domain . "/public_html/webmail/.htaccess\n";
-echo "cd " . $backup->getPath() . "/domains/" . $domain . "/public_html && /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:\"$password\"@localhost && cd httpdocs && mirror -R .'\n";
+echo "cd " . $backup->getPath() . "/domains/" . $domain . "/public_html && /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:\"$password\"@localhost && cd httpdocs && mirror --no-symlinks -p -R .'\n";
 foreach ($backup->getSubdomains($domain) as $sub) {
     echo "/opt/psa/bin/subdomain -c $sub -domain $domain -www-root /httpdocs/$sub -php true\n";
 };
@@ -154,7 +154,7 @@ foreach ($backup->getAdditionalDomains(TRUE) as $extradomain) {
     echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $extradomain . "/ -type f -print | grep configuration.php | xargs -I {} sed -i \"s@ftp_enable = '1'@ftp_enable = '0'@g\" {}\n";
     echo "mkdir " . $backup->getPath() . "/domains/" . $extradomain . "/public_html/webmail/\n";
     echo "echo \"Redirect 301 /webmail http://webmail." . $extradomain . "/\" > " . $backup->getPath() . "/domains/" . $extradomain . "/public_html/webmail/.htaccess\n";
-    echo "cd " . $backup->getPath() . "/domains/" . $extradomain . "/public_html && /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:\"$password\"@localhost && cd domains/$extradomain && mirror -R .'\n";
+    echo "cd " . $backup->getPath() . "/domains/" . $extradomain . "/public_html && /usr/bin/lftp -c 'set ftp:ssl-allow false && open ftp://$username:\"$password\"@localhost && cd domains/$extradomain && mirror --no-symlinks -p -R .'\n";
 
     foreach ($backup->getSubdomains($extradomain) as $sub) {
         echo "/opt/psa/bin/subdomain -c $sub -domain $extradomain -www-root /domains/$extradomain/$sub -php true\n";
@@ -193,7 +193,6 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         $handle = fopen($tmpfname, "w");
         fwrite($handle, "Redirect 301 / http://www." . $extradomain . "/\n");
         fclose($handle);
-
         echo "/usr/bin/ncftpput -c -u$username -p\"$password\" localhost domains/$alias/.htaccess < $tmpfname\n";
         echo "rm $tmpfname\n";
     }
