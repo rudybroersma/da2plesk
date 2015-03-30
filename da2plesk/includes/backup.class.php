@@ -102,7 +102,7 @@ class Backup {
                 if (strstr($catchall[1], $this->getUsername(FALSE)) !== FALSE) {
                     # Replace all midline occurences  
                     $catchall[1] = str_replace("," . $this->getUsername(FALSE) . ",", "," . $this->getUsername(FALSE) . "@" . $domain . ",", $catchall[1]); // username is found within a list of multiple addresses. 
-                    $catchall[1] = preg_replace("/^" . $this->getUsername(FALSE) . "[^@]/", $this->getUsername(FALSE) . "@"  . $domain, $catchall[1]);
+                    $catchall[1] = preg_replace("/^" . $this->getUsername(FALSE) . "[^@].*/", $this->getUsername(FALSE) . "@"  . $domain, $catchall[1]);
                     $catchall[1] = preg_replace("/" . $this->getUsername(FALSE) . "$/", $this->getUsername(FALSE) . "@"  . $domain, $catchall[1]);
                 };
 
@@ -139,7 +139,7 @@ class Backup {
                 if (strstr($forward[1], $this->getUsername(FALSE)) !== FALSE) {
                     # Replace all midline occurences  
                     $forward[1] = str_replace("," . $this->getUsername(FALSE) . ",", "," . $this->getUsername(FALSE) . "@" . $domain . ",", $forward[1]); // username is found within a list of multiple addresses. 
-                    $forward[1] = preg_replace("/^" . $this->getUsername(FALSE) . "[^@]/", $this->getUsername(FALSE) . "@"  . $domain, $forward[1]);
+                    $forward[1] = preg_replace("/^" . $this->getUsername(FALSE) . "[^@].*/", $this->getUsername(FALSE) . "@"  . $domain, $forward[1]);
                     $forward[1] = preg_replace("/" . $this->getUsername(FALSE) . "$/", $this->getUsername(FALSE) . "@"  . $domain, $forward[1]);
                 };
 
