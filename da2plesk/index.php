@@ -204,13 +204,16 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         $mailpw_restored = FALSE;
         $mailpw = $mail->getPassword($pop . "@" . $extradomain);
         if ($mailpw == false) {
+
             if ($pop == $username) {
               $mailpw = $mail->getPassword($pop);
-                if ($mailpw == false) {
-                  $mailpw = $password;
-                };
+              if ($mailpw == false) {
+                $mailpw = $password;
+              } else {
+                $mailpw_restored = TRUE;
+              }
             };
-#            $mailpw = $password;        } else {
+        } else {
             $mailpw_restored = TRUE;
         }
         
@@ -219,7 +222,13 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         
         if ($mailpw_restored == TRUE) {
             // only run imapsync when we recovered the password. Otherwise its useless.
-          echo IMAPSYNC_PATH . "imapsync --noreleasecheck --host1 " . $ip . " --host2 localhost --user1 '" . $pop . "@" . $extradomain . "' --user2 '"  . $pop . "@" . $extradomain . "' --password1 '" . $mailpw . "' --password2 '" . $mailpw . "'\n";
+            // TODO: Change this and just copy the maildir instead
+            
+            if ($pop == $username) {
+              echo IMAPSYNC_PATH . "imapsync --noreleasecheck --host1 " . $ip . " --host2 localhost --user1 '" . $pop . "' --user2 '"  . $pop . "@" . $extradomain . "' --password1 '" . $mailpw . "' --password2 '" . $mailpw . "'\n";
+            } else {
+              echo IMAPSYNC_PATH . "imapsync --noreleasecheck --host1 " . $ip . " --host2 localhost --user1 '" . $pop . "@" . $extradomain . "' --user2 '"  . $pop . "@" . $extradomain . "' --password1 '" . $mailpw . "' --password2 '" . $mailpw . "'\n";
+            }
         };
     }
     
