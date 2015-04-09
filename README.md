@@ -52,6 +52,10 @@ Nov 21 15:54:19 webserver002 dovecot: auth: Debug: passwd-file(user@domain.com,1
   On some systems the $8 and $9 should be replaced with $7 and $8. Also, on some systems the maillog is in  
   /var/log/maillog.* instead of /var/log/mail.log.*
   
+  To fetch system users' passwords as well use:
+  
+  cat /var/log/mail.log* | grep "is a match" | grep "auth-worker" | sed "s/(/ /g" | sed "s/,/ /g" | awk '{ print $10 " " $12 }' | sort | uniq >> /root/emailpws
+  
 * Download and install imapsync from https://github.com/imapsync/imapsync.
 
 * Edit config.inc.php to point to your newly created password list and imapsync path.
