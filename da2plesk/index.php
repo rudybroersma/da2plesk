@@ -12,12 +12,13 @@ include("includes/other.class.php");
 include("includes/email.class.php");
 include("includes/backup.class.php");
 include("includes/plesk.class.php");
+include("includes/dns.class.php");
 include("includes/config.inc.php");
 
 // Do not log notices and warnings (imap_open logs notices and warnings on wrong login)
 error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
-if (VERSION != 4) {
+if (VERSION != 5) {
     echo "Version mismatch. You need to update your configuration file\n";
     exit;
 };
@@ -26,6 +27,8 @@ $backup = new Backup(BACKUP_PATH, IGNORE_DB_NAMES, IGNORE_DB_USERS, IGNORE_SITES
 $other = new Other(MAIL_FROM_ADDR, MAIL_FROM_NAME, SEND_MAIL, DEBUG);
 $mail = new Email(EMAIL_PWS, DEBUG); // email_pws is a constant from the config file, containing email passwords
 $plesk = new Plesk();
+$dns = new DNS(NS_API_DOUPDATE, NS_API_UP, NS_API_DATA, NS_API_URL, unserialize(NS_OUR_CONTROL), IPv4, IPv6, DEBUG);
+
 $sp = $plesk->getServicePlans();
 
 $arguments = $other->parseArguments($argv);
@@ -144,6 +147,11 @@ echo "cd " . $backup->getPath() . "/domains/" . $domain . "/public_html && /usr/
 foreach ($backup->getSubdomains($domain) as $sub) {
     echo "/opt/psa/bin/subdomain -c $sub -domain $domain -www-root /httpdocs/$sub -php true\n";
 };
+
+foreach($dns->getDNSChanges($backup->getPath() . "/backup/" . $domain . "/" . $domain . ".db", $ip) as $dnschange) {
+    echo $dnschange . "\n";
+}
+
 /* END PRIMARY DOMAIN */
 
 /* START ADDITIONAL DOMAINS */
@@ -159,7 +167,10 @@ foreach ($backup->getAdditionalDomains(TRUE) as $extradomain) {
     foreach ($backup->getSubdomains($extradomain) as $sub) {
         echo "/opt/psa/bin/subdomain -c $sub -domain $extradomain -www-root /domains/$extradomain/$sub -php true\n";
     };
-    
+
+    foreach($dns->getDNSChanges($backup->getPath() . "/backup/" . $extradomain . "/" . $extradomain . ".db", $ip) as $dnschange) {
+        echo $dnschange . "\n";
+    }
 }
 
 /* END ADDITIONAL DOMAINS */
@@ -185,6 +196,10 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
 
     foreach ($backup->getAliases($extradomain) as $alias) {
         echo "/opt/psa/bin/domalias -c $alias -domain $extradomain\n";
+
+        foreach($dns->getDNSChanges($backup->getPath() . "/backup/" . $extradomain . "/" . $alias . ".db", $ip) as $dnschange) {
+            echo $dnschange . "\n";
+        }
     }
 
     foreach ($backup->getPointers($extradomain) as $alias) {
@@ -195,6 +210,11 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         fclose($handle);
         echo "/usr/bin/ncftpput -c -u$username -p\"$password\" localhost domains/$alias/.htaccess < $tmpfname\n";
         echo "rm $tmpfname\n";
+        
+        foreach($dns->getDNSChanges($backup->getPath() . "/backup/" . $extradomain . "/" . $alias . ".db", $ip) as $dnschange) {
+            echo $dnschange . "\n";
+        }
+        
     }
 
     $popresult = false;
