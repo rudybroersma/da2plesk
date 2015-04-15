@@ -15,6 +15,9 @@ In order to get the migration commands, you need to specify a serviceplan:
             
 --serviceplan=       to migrate this account to the specified serviceplan ID
 
+You can use --reseller=X together with --list-serviceplans to get a list
+of serviceplans for a specific reseller.
+
 Optionally you can use these parameters:
             
 --username=          to override the new username
