@@ -19,7 +19,8 @@ Optionally you can use these parameters:
             
 --username=          to override the new username
 --password=          to override the password
-            
+--reseller=          to create the new customer under this reseller's username
+    
 The following parameters return informational output only:
             
 --list-serviceplans  to request a list of serviceplan IDs
@@ -28,6 +29,7 @@ The following parameters return informational output only:
 --list-pointers      retrieve a list of all pointers
 --list-username      retrieve username from this backup
 --list-email         retrieve email address from this backup
+--list-resellers     retrieve a list of all resellers
 --generate-password  generate random password
 --help               get this help text
 

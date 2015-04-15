@@ -29,15 +29,36 @@ $mail = new Email(EMAIL_PWS, DEBUG); // email_pws is a constant from the config 
 $plesk = new Plesk();
 $dns = new DNS(NS_API_DOUPDATE, NS_API_UP, NS_API_DATA, NS_API_URL, unserialize(NS_OUR_CONTROL), IPv4, IPv6, DEBUG);
 
-$sp = $plesk->getServicePlans();
 
 $arguments = $other->parseArguments($argv);
+
+
+if (array_key_exists("reseller", $arguments)) {
+    $reseller = $arguments['reseller'];
+    if (!$plesk->isValidReseller($reseller)) {
+        echo "Invalid reseller username given. Exiting...\n";
+        exit;
+    }
+} else {
+    $reseller = FALSE;
+};
+
+$sp = $plesk->getServicePlans($reseller);
 
 if (array_key_exists("list-serviceplans", $arguments)) {
   foreach($sp as $plan) {
     echo $plan['id'] . ": " . $plan['name'] . "\n";
   };
  
+  exit;
+}
+
+/* TODO */
+if (array_key_exists("list-resellers", $arguments)) {
+  echo "login\t\t\tname\t\tcompany\n\n";
+  foreach($plesk->getResellers() as $resellerName) {
+    echo $resellerName['login'] . ":\t\tname: " . $resellerName['pname'] . "\tcompany: " . $resellerName['cname'] . "\n";
+  };
   exit;
 }
 
@@ -136,7 +157,11 @@ fclose($of);
 
 echo "/opt/psa/bin/server_pref -u -min_password_strength very_weak\n";
 
-echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd \"$password\"\n";
+if ($reseller == FALSE) {
+  echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd \"$password\"\n";
+} else {
+  echo "/opt/psa/bin/customer -c $username -email $acctemail -name $username -passwd \"$password\" --owner $reseller\n";
+}
 echo "/opt/psa/bin/subscription -c $domain -owner $username -service-plan \"$serviceplan_name\" -ip " . IPv4 . "," . IPv6 . " -login $username -passwd \"$password\" -seo-redirect none\n";
 echo "\n";
 echo "/usr/bin/find " . $backup->getPath() . "/domains/" . $domain . "/ -type f -print | xargs -I {} sed -i \"s@/home/" . $username . "/domains/" . $domain . "/public_html@/var/www/vhosts/" . $domain . "/httpdocs@g\" {}\n";
