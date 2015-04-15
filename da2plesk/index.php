@@ -249,7 +249,6 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
         $mailpw_restored = FALSE;
         $mailpw = $mail->getPassword($pop . "@" . $extradomain);
         if ($mailpw == false) {
-
             if ($pop == $username) {
               $mailpw = $mail->getPassword($pop);
               if ($mailpw == false) {
@@ -257,7 +256,9 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
               } else {
                 $mailpw_restored = TRUE;
               }
-            };
+            } else {
+                $mailpw = $password;
+            }
         } else {
             $mailpw_restored = TRUE;
         }
