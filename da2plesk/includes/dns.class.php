@@ -467,7 +467,7 @@ class DNS {
 //                        }
                 break;
             case "TXT":
-                if (preg_match("/" . $this->oldIp . "/", $record[$offset + 1]) != false || preg_match("/DKIM/", $record[$offset + 1]) != false) { // skip SPF and DKIM
+                if (preg_match("/" . $this->oldIPv4 . "/", $record[$offset + 1]) != false || preg_match("/DKIM/", $record[$offset + 1]) != false) { // skip SPF and DKIM
                     $this->other->Log("DNS->checkAndRemoveExisting", "TXT record matches old IP, skipping", false);
                     break;
                 }
@@ -504,7 +504,7 @@ class DNS {
     }
 
     public function getDNSChanges($zoneFile, $oldIPv4) {
-        /* TODO: Fix IPv6 records. We should iterate through oldIp and replace them with newIps */
+        /* TODO: Fix IPv6 records. We should iterate through oldIPv4 / oldIPv6 and replace them with newIps */
         
         $this->oldIPv4 = $oldIPv4;
 
