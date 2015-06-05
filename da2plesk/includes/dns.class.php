@@ -441,7 +441,8 @@ class DNS {
 
         switch ($record[$offset]) {
             case "A":
-                if ($record[0] == "" || $record[0] == $domain) {
+                #if ($record[0] == "" || $record[0] == $domain) {
+                if ($record[0] == "" || $record[0] == "$domain.") {
                     $this->removeTopRecord($domain);
                     $host = "";
                 } else {
