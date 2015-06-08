@@ -11,6 +11,7 @@
  */
 
 class DNS {
+
     private $record_types = array('SOA', 'A', 'NS', 'MX', 'CNAME', 'PTR', 'TXT', 'AAAA', 'SRV');
     private $removed = array();
     private $toadd = array();
@@ -19,90 +20,88 @@ class DNS {
     private $newIPv4;
     private $newIPv6;
     private $other;
-    
     private $apiDoUpdate, $apiUP, $apiData, $apiUrl;
-    
+
     public function __construct($apiDoUpdate, $apiUP, $apiData, $apiUrl, $filters, $ipv4, $ipv6, $debug) {
         $this->other = new Other();
         $this->other->setDebug($debug);
-        
+
         $this->apiDoUpdate = $apiDoUpdate;
         $this->apiUP = $apiUP;
         $this->apiData = $apiData;
         $this->apiUrl = $apiUrl;
         $this->filters = $filters;
-        
+
         $this->newIPv4 = $ipv4;
         $this->newIPv6 = $ipv6;
     }
-    
+
     private function isDomainInOurControl($domain) {
         if (strlen($domain) == 0) {
             die("domain cannot be empty on " . __FILE__ . " at " . __LINE__);
         }
-        
+
         $cnt = 0;
         $result = dns_get_record($domain, DNS_NS, $authns, $addtl);
         $isOurs = TRUE;
-        
+
         if (count($result) < 1) {
-                $this->other->Log("DNS->isDomainInOurControl", "No list of nameservers received!", false);
-                $isOurs = FALSE;
+            $this->other->Log("DNS->isDomainInOurControl", "No list of nameservers received!", false);
+            $isOurs = FALSE;
         }
 
         foreach ($result as $ns) {
-                foreach ($this->filters as $filter) {
-                        if (preg_match($filter, $ns['target'])) {
-                                #print("# MATCH: " . $ns['target'] . "\n");
-                                $cnt++;
-                        }
+            foreach ($this->filters as $filter) {
+                if (preg_match($filter, $ns['target'])) {
+                    #print("# MATCH: " . $ns['target'] . "\n");
+                    $cnt++;
                 }
+            }
         }
 
         if (count($result) > $cnt && $cnt > 0) {
-                $this->other->Log("DNS->isDomainInOurControl", "List of nameservers larger than expected!", false);
+            $this->other->Log("DNS->isDomainInOurControl", "List of nameservers larger than expected!", false);
         } else if ($cnt < 2) {
-                $this->other->Log("DNS->isDomainInOurControl", "Nameservers did not match", false);
-                $isOurs = FALSE;
+            $this->other->Log("DNS->isDomainInOurControl", "Nameservers did not match", false);
+            $isOurs = FALSE;
         }
 
         return $isOurs;
     }
-    
+
     public function updateNS($domain) {
         if ($this->isDomainInOurControl($domain) == TRUE && $this->apiDoUpdate == TRUE) {
             $postFields = str_replace("#DOMAIN#", $domain, $this->apiData);
             /*
-            
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $this->apiUrl);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
-            curl_setopt($ch, CURLOPT_USERAGENT, "DirectAdmin 2 Plesk Migration Script");
-            
-            if (strlen($this->apiUP) > 0) {
-                curl_setopt($ch, CURLOPT_USERPWD, $this->apiUP);
-            }
-            // this is better:
-            // curl_setopt($ch, CURLOPT_POSTFIELDS, 
-            //          http_build_query(array('postvar1' => 'value1')));
 
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+              $ch = curl_init();
+              curl_setopt($ch, CURLOPT_URL, $this->apiUrl);
+              curl_setopt($ch, CURLOPT_POST, 1);
+              curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+              curl_setopt($ch, CURLOPT_USERAGENT, "DirectAdmin 2 Plesk Migration Script");
 
-            $server_output = curl_exec ($ch);
-            curl_close ($ch);
+              if (strlen($this->apiUP) > 0) {
+              curl_setopt($ch, CURLOPT_USERPWD, $this->apiUP);
+              }
+              // this is better:
+              // curl_setopt($ch, CURLOPT_POSTFIELDS,
+              //          http_build_query(array('postvar1' => 'value1')));
 
-            // TODO: further processing ....
-            #if ($server_output == "OK") { ... } else { ... };
+              curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+              $server_output = curl_exec ($ch);
+              curl_close ($ch);
+
+              // TODO: further processing ....
+              #if ($server_output == "OK") { ... } else { ... };
              * 
              */
             echo "\ncurl -u " . $this->apiUP . " --data \"" . $postFields . "\" " . $this->apiUrl . "\n\n";
-            
         } else {
             $this->other->Log("DNS->updateNS", "Domain " . $domain . " DNS is not within our control or API updating is disabled", false);
         }
     }
-    
+
     public function parseDNS($zone_file) {
 
         if (!file_exists($zone_file)) {
@@ -316,16 +315,16 @@ class DNS {
     }
 
     /*
-     TODO: This function isnt used? 
-    private function identicalValues($arrayA, $arrayB) {
+      TODO: This function isnt used?
+      private function identicalValues($arrayA, $arrayB) {
 
-        sort($arrayA);
-        sort($arrayB);
+      sort($arrayA);
+      sort($arrayB);
 
-        return $arrayA == $arrayB;
-    }
-    */
-    
+      return $arrayA == $arrayB;
+      }
+     */
+
     private function removeMailRecord($domain) {
         $delstring = "/opt/psa/bin/dns --del " . $domain . " -a mail -ip " . $this->newIPv4;
         if (array_search($delstring, $this->removed) === FALSE)
@@ -352,7 +351,7 @@ class DNS {
     private function checkSrvRecord($record) {
         #TODO: Should not be hardcoded.!
         if (!preg_match("/cpanelemaildiscovery.cpanel.net/", $record[3]) && !preg_match("/metis.X.eu/", $record[3]))
-            print("# SRV RECORD CHECK MANUALLY\n"); #TODO: Que?
+            print("# SRV RECORD CHECK MANUALLY\n");#TODO: Que?
     }
 
     private function removeTopRecord($domain) {
@@ -473,17 +472,18 @@ class DNS {
                     break;
                 }
                 if (count($record) > 5) {
-                        $i = 0;
-                        while ($offset + 1 + $i <= count($record)) {
-                                $concat .= " " . $record[$offset + 1 + $i];
-                                $i++;
-                        }
-                        $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -txt " . $concat);
+                    $i = 0;
+                    while ($offset + 1 + $i <= count($record)) {
+                        $concat .= " " . $record[$offset + 1 + $i];
+                        $i++;
+                    }
+                    $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -txt " . $concat);
                 } else {
-                         $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -txt " . $record[$offset + 1]);
+                    $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -txt " . $record[$offset + 1]);
                 }
 
-                break;            case "SRV":
+                break;
+            case "SRV":
                 $this->checkSrvRecord($record);
                 break;
             case "MX":
@@ -515,17 +515,17 @@ class DNS {
 
     public function getDNSChanges($zoneFile, $oldIPv4) {
         /* TODO: Fix IPv6 records. We should iterate through oldIPv4 / oldIPv6 and replace them with newIps */
-        
+
         $this->oldIPv4 = $oldIPv4;
 
         $domain = preg_replace("/.db$/", "", $zoneFile);
-        $domain = preg_replace("/.*\//", "", $domain);        
-        
+        $domain = preg_replace("/.*\//", "", $domain);
+
         $zone = $this->parseDNS($zoneFile);
-        
+
         #$this->pleskGetIP();
         foreach ($zone as $record) {
-            
+
             if (count($record) < 3) // te weinig
                 continue;
 
@@ -554,7 +554,7 @@ class DNS {
         }
 
         $returnValues = array_merge($this->removed, $this->toadd);
-        
+
         $this->toadd = array();
         $this->removed = array();
 
