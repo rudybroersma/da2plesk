@@ -224,7 +224,7 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
     };
 
     foreach ($backup->getAliases($extradomain) as $alias) {
-        echo "/opt/psa/bin/domalias -c $alias -domain $extradomain\n";
+        echo "/opt/psa/bin/domalias -c $alias -domain $extradomain -dns false\n";
 
         foreach($dns->getDNSChanges($backup->getPath() . "/backup/" . $extradomain . "/" . $alias . ".db", $ip) as $dnschange) {
             echo $dnschange . "\n";
