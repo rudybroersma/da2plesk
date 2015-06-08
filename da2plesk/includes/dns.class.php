@@ -418,7 +418,8 @@ class DNS {
             $offset++;
         }
 
-        if ($record[$offset + 1] == $this->newIPv4 || $record[$offset + 1] == "127.0.0.1") { // wordt al geregeld met wildcards, hoeft geen apart record voor te komen
+#        if ($record[$offset + 1] == $this->newIPv4 || $record[$offset + 1] == "127.0.0.1") { // wordt al geregeld met wildcards, hoeft geen apart record voor te komen
+        if ((isset($record[$offset + 1]) && $record[$offset + 1] == $this->newIPv4) || (isset($record[$offset + 1]) && $record[$offset + 1] == "127.0.0.1")) { // wordt al geregeld met wildcards, hoeft geen apart record voor te komen
             return;
         }
 
@@ -498,15 +499,15 @@ class DNS {
                 if (preg_match("/mailbackup/", $mx))
                     break; // skip antiquated mailbackup records
 
-                if ($mx == $domain) {
-                    $this->other->Log("DNS->checkAndRemoveExisting", "MX remains the same", false);
-                } else {
+#                if ($mx == $domain) {
+#                    $this->other->Log("DNS->checkAndRemoveExisting", "MX remains the same", false);
+#                } else {
                     $this->removeMxRecord($domain);
                     if (!preg_match("/\./", $mx) && $mx[(count($mx) - 1)] != ".") {
                         $mx = $mx . "." . $domain;
                     }
                     $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -mx '' -mailexchanger " . $mx . " -priority " . $priority);
-                }
+#                }
                 break;
             default:
                 break;
