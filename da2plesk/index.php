@@ -173,9 +173,13 @@ foreach ($backup->getSubdomains($domain) as $sub) {
     echo "/opt/psa/bin/subdomain -c $sub -domain $domain -www-root /httpdocs/$sub -php true\n";
 };
 
-foreach($dns->getDNSChanges($backup->getPath() . "/backup/" . $domain . "/" . $domain . ".db", $ip) as $dnschange) {
-    echo $dnschange . "\n";
-}
+    /* We've changed the order for DNS changes. In Plesk an alias domain where DNS Sync is disabled, the domain inherits the zonefile from
+     * the parent domain. We want the alias domains to have a clean zonefile, so we perform DNS changes at a later time.
+    foreach($dns->getDNSChanges($backup->getPath() . "/backup/" . $domain . "/" . $domain . ".db", $ip) as $dnschange) {
+        echo $dnschange . "\n";
+    }
+     * 
+     */
 
 /* END PRIMARY DOMAIN */
 
@@ -322,6 +326,17 @@ foreach ($backup->getDatabaseList() as $db) {
         echo "/usr/bin/mysql -uadmin -p`cat /etc/psa/.psa.shadow` mysql -e \"FLUSH PRIVILEGES\"\n";
     };
 }
+
+/* EXTRA PRIMARY DOMAIN UPDATE
+ * adjust the zone for the primary domain _after_ all aliases have been created
+ */
+
+foreach($dns->getDNSChanges($backup->getPath() . "/backup/" . $domain . "/" . $domain . ".db", $ip) as $dnschange) {
+    echo $dnschange . "\n";
+}
+
+/* END PRIMARY DOMAIN UPDATE */
+
 
 $backup->getCron();
 
