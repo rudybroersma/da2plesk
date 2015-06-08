@@ -468,13 +468,22 @@ class DNS {
 //                        }
                 break;
             case "TXT":
-                if (preg_match("/" . $this->oldIPv4 . "/", $record[$offset + 1]) != false || preg_match("/DKIM/", $record[$offset + 1]) != false) { // skip SPF and DKIM
+                if (preg_match("/" . $this->oldIPv4 . "/", $record[$offset + 1]) || preg_match("/DKIM/", $record[$offset + 1])) { // skip SPF and DKIM
                     $this->other->Log("DNS->checkAndRemoveExisting", "TXT record matches old IP, skipping", false);
                     break;
                 }
-                $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -txt " . $record[$offset + 1]);
-                break;
-            case "SRV":
+                if (count($record) > 5) {
+                        $i = 0;
+                        while ($offset + 1 + $i <= count($record)) {
+                                $concat .= " " . $record[$offset + 1 + $i];
+                                $i++;
+                        }
+                        $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -txt " . $concat);
+                } else {
+                         $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -txt " . $record[$offset + 1]);
+                }
+
+                break;            case "SRV":
                 $this->checkSrvRecord($record);
                 break;
             case "MX":
