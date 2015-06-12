@@ -323,17 +323,20 @@ class Backup {
     }
     
     public function getDatabaseLogin($database) {
+        $this->other->Log("Backup->getDatabaseLogin", "Retrieving database usernames for database " . $database);
         $user = $this->getUsername(FALSE);
         $logins = array();
         foreach($this->readFile($this->backup_path . "/backup/" . $database . ".conf") as $row) {
-                if (preg_match("/". $user . "_/", $row) === 1) {
+                // Bugfix: DirectAdmin creates a MySQL account for the system user. The old regexp didn't catch this, as it expected $user suffixed by _. 
+                // extend the regexp so that the sole username is also allowed.
+                if (preg_match("/". $user . "_/", $row) === 1 || preg_match("/". $user . "=/", $row) === 1) {
                     $line_array = explode("&", $row);
                     $temp = explode("=", $line_array[0]);
                     $sql_user = $temp[0];
                     $sql_pass = str_replace("passwd=", "", $line_array[9]);
                         
                     if (!in_array($sql_user, $this->ignore_db_users)) {
-                      $this->other->Log("Backup->getDatabaseLogin", $sql_user . "|" . $sql_pass);
+                      $this->other->Log("Backup->getDatabaseLogin", "Found user: " . $sql_user . "|" . $sql_pass);
                       $logins[] = array("user" => $sql_user, "pass" => $sql_pass);
                     } else {
                       $this->other->Log("Backup->getDatabaseLogin", $sql_user . " is in banlist. Ignored!", true);
