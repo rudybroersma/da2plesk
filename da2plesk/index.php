@@ -1,4 +1,6 @@
 <?php
+/* index.php: da2plesk */
+
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 /*
@@ -32,7 +34,6 @@ $dns = new DNS(NS_API_DOUPDATE, NS_API_UP, NS_API_DATA, NS_API_URL, unserialize(
 
 $arguments = $other->parseArguments($argv);
 
-
 if (array_key_exists("reseller", $arguments)) {
     $reseller = $arguments['reseller'];
     if (!$plesk->isValidReseller($reseller)) {
@@ -63,17 +64,17 @@ if (array_key_exists("list-resellers", $arguments)) {
 }
 
 if (array_key_exists("list-username", $arguments)) {
-  echo $backup->getUsername();
+  echo $backup->getUsername() . "\n";
   exit;
 }
 
 if (array_key_exists("generate-password", $arguments)) {
-  echo $other->generatePassword();
+  echo $other->generatePassword() . "\n";
   exit;
 }
 
 if (array_key_exists("list-email", $arguments)) {
-  echo $backup->getEmail();
+  echo $backup->getEmail() . "\n";
   exit;
 }
 

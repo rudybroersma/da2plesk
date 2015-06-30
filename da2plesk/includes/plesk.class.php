@@ -26,6 +26,8 @@ class Plesk {
     }
     
     public function getResellers() {
+        $resellers = [];
+        
         $plesk_db = mysql_connect("localhost", $this->getUsername(), $this->getPassword());
         mysql_select_db("psa", $plesk_db);
 
