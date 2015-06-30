@@ -105,11 +105,8 @@ class DNS {
     public function parseDNS($zone_file) {
 
         if (!file_exists($zone_file)) {
-            #TODO: Can be done neater.
-            echo "########### CRITICAL ERROR ############";
-            echo "Filename " . $zone_file . " does not exists";
-            echo "########### CRITICAL ERROR ############";
-            exit;
+            $this->other->Log("DNS->parseDNS", "File " . $zone_file . " does not exists", false);
+            return array();
         }
         $file = file_get_contents($zone_file);
 
@@ -423,19 +420,23 @@ class DNS {
             return;
         }
 
-        if (preg_match("/^www$/i", $record[0])) {
+        #if (preg_match("/^www$/i", $record[0])) {
+        if (preg_match("/^www$/i", $record[0]) || preg_match("/^www.$domain$/i", $record[0])) {
             $this->removeWWWRecord($domain);
         }
 
-        if (preg_match("/^webmail$/i", $record[0])) {
+        #if (preg_match("/^webmail$/i", $record[0])) {
+        if (preg_match("/^webmail$/i", $record[0]) || preg_match("/^webmail.$domain$/i", $record[0])) {
             $this->removeWebMailRecord($domain);
         }
 
-        if (preg_match("/^mail$/i", $record[0])) {
+        #if (preg_match("/^mail$/i", $record[0])) {
+        if (preg_match("/^mail$/i", $record[0]) || preg_match("/^mail.$domain$/i", $record[0])) {
             $this->removeMailRecord($domain);
         }
 
-        if (preg_match("/^\*/", $record[0])) { // Wildcard
+        #if (preg_match("/^\*/", $record[0])) { // Wildcard
+        if (preg_match("/^\*/", $record[0]) || preg_match("/^\*.$domain$/i", $record[0])) { // Wildcard
             $this->removeWildcardRecord($domain);
         }
 
