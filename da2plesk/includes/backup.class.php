@@ -246,7 +246,7 @@ class Backup {
         #foreach (glob($this->backup_path . "/domains/*", GLOB_ONLYDIR) as $filename) {
         foreach (glob($this->backup_path . "/backup/*", GLOB_ONLYDIR) as $filename) {
             if (file_exists($filename . "/domain.conf")) { # See if example.com/domain.conf exists. This indicates it is a configured domain.
-                $filename = str_replace($this->backup_path . "/domains/", "", $filename);
+                $filename = str_replace($this->backup_path . "/backup/", "", $filename);
                 if ($filename != $this->getDomain(FALSE) || $skip == FALSE) {
                     // als dit domein niet het eerste domein is
                     // OF
