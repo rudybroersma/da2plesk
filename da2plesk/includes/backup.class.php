@@ -360,7 +360,11 @@ class Backup {
                 $line_array = explode("&", $row);
                 $temp = explode("=", $line_array[0]);
                 $sql_user = $temp[0];
-                $sql_pass = str_replace("passwd=", "", $line_array[9]);
+                #$sql_pass = str_replace("passwd=", "", $line_array[9]);
+                foreach ($line_array as $line) {
+                         if (preg_match("/^passwd=/", $line)) 
+                                 $sql_pass = preg_replace("/^passwd=/", "", $line);
+                }
 
                 if (!in_array($sql_user, $this->ignore_db_users)) {
                     $this->other->Log("Backup->getDatabaseLogin", "Found user: " . $sql_user . "|" . $sql_pass);
