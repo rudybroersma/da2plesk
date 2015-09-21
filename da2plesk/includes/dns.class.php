@@ -497,17 +497,24 @@ class DNS {
                     $priority = $record[$offset + 1];
                 }
 
-                if (preg_match("/mailbackup/", $mx))
-                    break; // skip antiquated mailbackup records
+#                if (preg_match("/mailbackup/", $mx))
+#                    break; // skip antiquated mailbackup records
+                $skip = 0;
+                foreach (unserialize(MX_IGNORE_REGEX) as $i) {
+                    if (preg_match($i, $mx))
+                        $skip = 1;
+                }
 
+                if ($skip == 1)
+                    break;
 #                if ($mx == $domain) {
 #                    $this->other->Log("DNS->checkAndRemoveExisting", "MX remains the same", false);
 #                } else {
-                    $this->removeMxRecord($domain);
-                    if (!preg_match("/\./", $mx) && $mx[(count($mx) - 1)] != ".") {
-                        $mx = $mx . "." . $domain;
-                    }
-                    $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -mx '' -mailexchanger " . $mx . " -priority " . $priority);
+                $this->removeMxRecord($domain);
+                if (!preg_match("/\./", $mx) && $mx[(count($mx) - 1)] != ".") {
+                    $mx = $mx . "." . $domain;
+                }
+                $this->addRecord("/opt/psa/bin/dns --add " . $domain . " -mx '' -mailexchanger " . $mx . " -priority " . $priority);
 #                }
                 break;
             default:

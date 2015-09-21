@@ -19,6 +19,13 @@ define("DEBUG", FALSE);
 define("IPv4", "IPv4 IP of Plesk server");
 define("IPv6", "IPv6 IP of Plesk server");
 
+/* 
+ * DNS Settings: ignore certain regexes in DNS MX record
+ * Records that match these regexes are ignored when updating the DNS
+ * zonefile.
+ */
+define("MX_IGNORE_REGEX", serialize(array("/turtle/", "/mailbackup/")));
+
 /*
  * Here you can define an API call (which is ran using CURL) to update the DNS
  * servers for migrated domains. This can be for example a call to WHMCS
