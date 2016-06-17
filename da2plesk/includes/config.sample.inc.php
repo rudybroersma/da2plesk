@@ -93,4 +93,3 @@ Please let us know if you experience any difficulties.
 Regards,
 #MAIL_FROM_NAME#
             ");
-
