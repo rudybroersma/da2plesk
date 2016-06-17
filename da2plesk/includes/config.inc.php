@@ -16,8 +16,8 @@ define("PW_POLICY", "medium"); # Medium is required for WHMCS automatic provisio
  */
 define("DEBUG", FALSE);
 
-define("IPv4", "IPv4 IP of Plesk server");
-define("IPv6", "IPv6 IP of Plesk server");
+define("IPv4", "83.137.145.60");
+define("IPv6", "2a01:1b0:7999:402::60");
 
 /* 
  * DNS Settings: ignore certain regexes in DNS MX record
@@ -48,13 +48,13 @@ define("NS_API_DATA", "domain=#DOMAIN#&ns1=ns1.example.com&ns2=ns2.example.com")
 define("NS_API_URL", "http://myregistry.example.com/api/changens");
 define("NS_OUR_CONTROL", serialize(array('/example.com/', '/myisp.eu/')));
 
-define("BACKUP_PATH", "path to your backup directory");
+define("BACKUP_PATH", "/var/www/vhosts/migratie.tld/private/da2plesk/unpack/");
 
 // You can grab a copy of imapsync from https://github.com/imapsync/imapsync
 // Debian deps: apt-get install libmail-imapclient-perl
 define("IMAPSYNC_PATH", "path to your imapsync binary with trailing slash");
 
-define("EMAIL_PWS", "filename containing email passwords [email][space][password]");
+define("EMAIL_PWS", "/var/www/vhosts/migratie.tld/private/da2plesk/da2plesk/emails");
 
 define("MAIL_FROM_ADDR", "Your e-mail address");
 define("MAIL_FROM_NAME", "Your name");
