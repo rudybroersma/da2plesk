@@ -27,7 +27,7 @@ if (VERSION != 5) {
 
 $backup = new Backup(BACKUP_PATH, IGNORE_DB_NAMES, IGNORE_DB_USERS, IGNORE_SITES, DEBUG); // backup_path is a constant from the config file containing untarred DA backup
 $other = new Other(MAIL_FROM_ADDR, MAIL_FROM_NAME, SEND_MAIL, DEBUG);
-$mail = new Email(EMAIL_PWS, DEBUG); // email_pws is a constant from the config file, containing email passwords
+$mail = new Email(BACKUP_PATH, DEBUG); // backup_path is all we need, rest is relative
 $plesk = new Plesk();
 $dns = new DNS(NS_API_DOUPDATE, NS_API_UP, NS_API_DATA, NS_API_URL, unserialize(NS_OUR_CONTROL), IPv4, IPv6, DEBUG);
 
@@ -268,19 +268,11 @@ foreach ($backup->getAdditionalDomains(FALSE) as $extradomain) {
             $mailpw_restored = TRUE;
         }
         
-        echo "/opt/psa/bin/mail -c '" . $pop . "@" . $extradomain . "' -mailbox true -passwd '$mailpw' -passwd_type plain\n";
+        echo "/opt/psa/bin/mail -c '" . $pop . "@" . $extradomain . "' -mailbox true -passwd '$mailpw' -passwd_type encrypted\n";
         echo "/opt/psa/bin/spamassassin -u '" . $pop . "@" . $extradomain . "' -status true -hits 5 -action del\n";
-        
-        if ($mailpw_restored == TRUE) {
-            // only run imapsync when we recovered the password. Otherwise its useless.
-            // TODO: Change this and just copy the maildir instead
-            
-            if ($pop == $username) {
-              echo IMAPSYNC_PATH . "imapsync --noreleasecheck --host1 " . $ip . " --host2 localhost --user1 '" . $pop . "' --user2 '"  . $pop . "@" . $extradomain . "' --password1 '" . $mailpw . "' --password2 '" . $mailpw . "'\n";
-            } else {
-              echo IMAPSYNC_PATH . "imapsync --noreleasecheck --host1 " . $ip . " --host2 localhost --user1 '" . $pop . "@" . $extradomain . "' --user2 '"  . $pop . "@" . $extradomain . "' --password1 '" . $mailpw . "' --password2 '" . $mailpw . "'\n";
-            }
-        };
+     
+	echo "cp -R '" . BACKUP_PATH . "backup/" . $extradomain . "/email/data/imap/" . $pop . "/Maildir/.' '/var/qmail/mailnames/" . $extradomain . "/" . $pop . "/Maildir/'\n";
+	echo "chown -R popuser:popuser '/var/qmail/mailnames/" . $extradomain . "/" . $pop . "'\n";   
     }
     
     foreach ($backup->getForward($extradomain) as $forward) {

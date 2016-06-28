@@ -18,23 +18,19 @@ class Email {
             exit;
         }
     }
-    
+ 
     public function getPassword($email) {
-        $handle = @fopen($this->filename, "r");
+
+        $explodeEmail = explode("@", $email); # da mail shadow file does not contain full mail addresses
+        $handle = @fopen($this->filename . "backup/" . $explodeEmail[1] . "/email/passwd", "r");
 
         if ($handle) {
             while (($buffer = fgets($handle, 4096)) !== false) {
                 $buffer = trim($buffer);
-                $row_array = explode(" ", $buffer);
-                if ($row_array[0] == $email) {
-                    $explodeEmail = explode("@", $email);
-                    if (strpos($row_array[1], $explodeEmail[0]) !== false) {
-                        $this->other->Log("Email->getPassword", $email . " has invalid password (" . $row_array[1] . ") (username in password is not allowed)", true);
-                        return false;
-                    } else {
+                $row_array = explode(":", $buffer); # da mail shadow file entries are separated by colon
+                if ($row_array[0] == $explodeEmail[0]) {
                         $this->other->Log("Email->getPassword", $email . " has password " . $row_array[1]);
                         return trim($row_array[1]);
-                    };
                 };
             }
             if (!feof($handle)) {
