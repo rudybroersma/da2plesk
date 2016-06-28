@@ -50,12 +50,6 @@ define("NS_OUR_CONTROL", serialize(array('/example.com/', '/myisp.eu/')));
 
 define("BACKUP_PATH", "path to your backup directory");
 
-// You can grab a copy of imapsync from https://github.com/imapsync/imapsync
-// Debian deps: apt-get install libmail-imapclient-perl
-define("IMAPSYNC_PATH", "path to your imapsync binary with trailing slash");
-
-define("EMAIL_PWS", "filename containing email passwords [email][space][password]");
-
 define("MAIL_FROM_ADDR", "Your e-mail address");
 define("MAIL_FROM_NAME", "Your name");
 define("SEND_MAIL", false); // Do not send any email, use this for testing.
